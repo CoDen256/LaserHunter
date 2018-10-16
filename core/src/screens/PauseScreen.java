@@ -7,18 +7,19 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.mygdx.laserhunter.LaserHunterGame;
 
-public class MainMenuScreen implements Screen {
+public class PauseScreen implements Screen {
 
     LaserHunterGame game;
+
     BitmapFont font;
 
-    public MainMenuScreen(LaserHunterGame game) {
+    public PauseScreen(LaserHunterGame game) {
         this.game = game;
     }
 
     @Override
     public void show() {
-        Gdx.app.log("screens", "MainMenuScreen is created");
+        Gdx.app.log("screens", "PauseScreen is created");
         font = new BitmapFont();
 
 
@@ -31,24 +32,28 @@ public class MainMenuScreen implements Screen {
         update();
 
         this.game.batch.begin();
-        font.draw(this.game.batch, "Main Menu", Gdx.graphics.getWidth()/3, 3*Gdx.graphics.getHeight()/4);
+        font.draw(this.game.batch, "Game is paused", Gdx.graphics.getWidth()/3, 3*Gdx.graphics.getHeight()/4);
         this.game.batch.end();
+
     }
 
     private void update() {
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.justTouched()) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || Gdx.input.justTouched()) {
             this.game.setScreen(new GameScreen(this.game));
+        }
+        else if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            this.game.setScreen(new MainMenuScreen(this.game));
         }
 
     }
-
 
     public void clearScreen(){
         Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
+
 
     @Override
     public void resize(int width, int height) {
@@ -74,6 +79,4 @@ public class MainMenuScreen implements Screen {
     public void dispose() {
 
     }
-
-
 }

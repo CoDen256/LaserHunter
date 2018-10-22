@@ -1,0 +1,26 @@
+leftButton.png
+size: 52, 69
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+buttonDown
+  rotate: false
+  xy: 1, 38
+  size: 44, 30
+  orig: 50, 35
+  offset: 3, 3
+  index: -1
+buttonOver
+  rotate: false
+  xy: 1, 1
+  size: 50, 35
+  orig: 50, 35
+  offset: 0, 0
+  index: -1
+buttonUp
+  rotate: false
+  xy: 1, 1
+  size: 50, 35
+  orig: 50, 35
+  offset: 0, 0
+  index: -1

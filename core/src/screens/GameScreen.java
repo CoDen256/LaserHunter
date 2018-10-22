@@ -5,17 +5,29 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.laserhunter.LaserHunterGame;
 
+import buttons.ButtonType;
+import buttons.StageManager;
 import maps.GameMap;
-import maps.GameMap1;
+import maps.StartMap;
+import tiles.TileType;
 
 public class GameScreen implements Screen {
 
     LaserHunterGame game;
     OrthographicCamera camera;
     GameMap gameMap;
+
+    ButtonType buttonLeft;
+    ButtonType buttonRight;
+
+    StageManager manager;
+
+
+
 
     public GameScreen(LaserHunterGame game) {
         this.game = game;
@@ -24,12 +36,29 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
 
-        gameMap = new GameMap1();
-        int w = 900;
-        int h = 450;
+        int w = 400;
+        int h = 300;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
+
+        Gdx.app.log("screens", "GameScreen is created");
+
+        gameMap = new StartMap();
+
+
+
+        manager = new StageManager();
+        buttonLeft = new ButtonType(manager.getStage(), "buttons/leftButton.atlas", Gdx.graphics.getWidth() / 15, h / 5);
+        buttonRight = new ButtonType(manager.getStage(), "buttons/rightButton.atlas", Gdx.graphics.getHeight() / 3, h / 5);
+
+        buttonLeft.create();
+        buttonRight.create();
+
+
+        gameMap.create(buttonLeft, buttonRight);
+
+
 
     }
 
@@ -40,21 +69,18 @@ public class GameScreen implements Screen {
         update();
 
         gameMap.render(camera, this.game.batch, Gdx.graphics.getDeltaTime());
-
-
+        manager.render();
 
 
     }
 
     private void update() {
 
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             pause();
         }
 
-        if (Gdx.input.isTouched()) {
-            camera.translate(-Gdx.input.getDeltaX(), Gdx.input.getDeltaY());
-        }
 
         camera.update();
         gameMap.update(camera, Gdx.graphics.getDeltaTime());

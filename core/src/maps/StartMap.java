@@ -1,5 +1,6 @@
 package maps;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -10,12 +11,14 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import tiles.TileType;
 
-public class GameMap1 extends GameMap {
+public class StartMap extends GameMap {
+
 
     TiledMap tiledMap;
     OrthogonalTiledMapRenderer renderer;
 
-    public GameMap1() {
+    public StartMap() {
+
         tiledMap = new TmxMapLoader().load("map1.tmx");
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
     }

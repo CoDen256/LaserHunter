@@ -5,12 +5,23 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.laserhunter.LaserHunterGame;
+
+import buttons.ButtonType;
+import buttons.StageManager;
 
 public class MainMenuScreen implements Screen {
 
     LaserHunterGame game;
     BitmapFont font;
+    StageManager manager;
+
+    ButtonType startButton;
+    ButtonType quitButton;
 
     public MainMenuScreen(LaserHunterGame game) {
         this.game = game;
@@ -21,16 +32,42 @@ public class MainMenuScreen implements Screen {
         Gdx.app.log("screens", "MainMenuScreen is created");
         font = new BitmapFont();
 
+        manager = new StageManager();
+
+        int w = Gdx.graphics.getWidth();
+        int h = Gdx.graphics.getHeight();
+
+        startButton = new ButtonType(manager.getStage(), "buttons/startButton.atlas", "Start", w/2-150, 2*h/3);
+        quitButton = new ButtonType(manager.getStage(), "buttons/startButton.atlas", "Quit", w/2-150, h/3);
+
+        startButton.create();
+        quitButton.create();
+
+        startButton.getButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GameScreen(game));
+            }});
+
+        quitButton.getButton().addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
+            }});
+
 
     }
 
     @Override
     public void render(float delta) {
 
+
+
         clearScreen();
         update();
 
         this.game.batch.begin();
+        manager.render();
         font.draw(this.game.batch, "Main Menu", Gdx.graphics.getWidth()/3, 3*Gdx.graphics.getHeight()/4);
         this.game.batch.end();
     }
@@ -38,7 +75,7 @@ public class MainMenuScreen implements Screen {
     private void update() {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER) || Gdx.input.justTouched()) {
-            this.game.setScreen(new GameScreen(this.game));
+           // this.game.setScreen(new GameScreen(this.game));
         }
 
     }

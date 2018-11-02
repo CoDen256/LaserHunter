@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class EntitySnapshot {
 
     public String type;
-    public float x,y;
+    public float x,y,health;
     public HashMap<String, String> data;
 
     public EntitySnapshot() {}
@@ -14,6 +14,7 @@ public class EntitySnapshot {
         this.type = type;
         this.x = x;
         this.y = y;
+        this.health = health;
 
     }
 
@@ -30,6 +31,8 @@ public class EntitySnapshot {
     public void setY(float y) {
         this.y = y;
     }
+
+    public float getHealth(){return health;}
 
     public String getType() {
         return type;

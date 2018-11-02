@@ -1,26 +1,26 @@
-leftButton.png
-size: 200, 390
+androidStart.png
+size: 1500, 193
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 buttonDown
   rotate: false
   xy: 0, 0
-  size: 200, 130
-  orig: 200, 130
+  size: 500, 193
+  orig: 500, 193
   offset: 0, 0
   index: -1
 buttonOver
   rotate: false
-  xy: 0, 130
-  size: 200, 130
-  orig: 200, 130
+  xy: 500, 0
+  size: 500, 193
+  orig: 500, 193
   offset: 0, 0
   index: -1
 buttonUp
   rotate: false
-  xy: 0, 260
-  size: 200, 130
-  orig: 200, 130
+  xy: 1000, 0
+  size: 500, 193
+  orig: 500, 193
   offset: 0, 0
   index: -1

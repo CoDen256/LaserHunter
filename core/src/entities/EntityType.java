@@ -12,7 +12,7 @@ import tiles.TileType;
 
 public enum EntityType {
 
-    PLAYER("player", 32, 55, 49, Player.class);
+    PLAYER("player", 29, 55, 49, Player.class);
 
     private String id;
     private int width, height;
@@ -29,6 +29,8 @@ public enum EntityType {
 
         this.loaderClass = loaderClass;
     }
+
+
 
     public String getId() {
         return id;

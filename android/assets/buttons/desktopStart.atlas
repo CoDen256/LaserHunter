@@ -1,26 +1,26 @@
-startButton.png
-size: 906, 66
+desktopStart.png
+size: 350, 399
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 buttonDown
   rotate: false
-  xy: 1, 1
-  size: 300, 64
-  orig: 300, 64
+  xy: 0, 0
+  size: 350, 133
+  orig: 350, 133
   offset: 0, 0
   index: -1
 buttonOver
   rotate: false
-  xy: 303, 1
-  size: 300, 64
-  orig: 300, 64
+  xy: 0, 133
+  size: 350, 133
+  orig: 350, 133
   offset: 0, 0
   index: -1
 buttonUp
   rotate: false
-  xy: 605, 1
-  size: 300, 64
-  orig: 300, 64
+  xy: 0, 266
+  size: 350, 133
+  orig: 350, 133
   offset: 0, 0
   index: -1

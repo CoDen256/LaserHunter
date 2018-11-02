@@ -17,9 +17,14 @@ public class StartMap extends GameMap {
     TiledMap tiledMap;
     OrthogonalTiledMapRenderer renderer;
 
-    public StartMap() {
+    private int w,h;
 
-        tiledMap = new TmxMapLoader().load("map1.tmx");
+    public StartMap(int w, int h) {
+
+        this.w = w;
+        this.h = h;
+
+        tiledMap = new TmxMapLoader().load("map3.tmx");
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
     }
 
@@ -53,11 +58,20 @@ public class StartMap extends GameMap {
             TiledMapTile tile = cell.getTile();
             if (tile != null) {
                 int id = tile.getId();
-                return TileType.getTileTypeById(id);
+                return TileType.getTileTypeById(id-1);
             }
         }
         return null;
 
+    }
+
+    @Override
+    public int getResX(){
+        return this.w;
+    }
+    @Override
+    public int getResY(){
+        return this.h;
     }
 
     @Override

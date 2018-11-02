@@ -1,5 +1,6 @@
 package screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -44,17 +45,19 @@ public class GameScreen implements Screen {
 
         Gdx.app.log("screens", "GameScreen is created");
 
-        gameMap = new StartMap();
-
-
+        gameMap = new StartMap(w,h);
 
         manager = new StageManager();
-        buttonLeft = new ButtonType(manager.getStage(), "buttons/leftButton.atlas", Gdx.graphics.getWidth() / 15, h / 5);
-        buttonRight = new ButtonType(manager.getStage(), "buttons/rightButton.atlas", Gdx.graphics.getHeight() / 3, h / 5);
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
 
-        buttonLeft.create();
-        buttonRight.create();
+            buttonLeft = new ButtonType(manager.getStage(), "buttons/leftButton.atlas", Gdx.graphics.getWidth() / 30, h / 5);
+            buttonRight = new ButtonType(manager.getStage(), "buttons/rightButton.atlas", Gdx.graphics.getHeight() / 3, h / 5);
 
+            buttonLeft.create();
+            buttonRight.create();
+        } else {
+            buttonRight = buttonLeft = null;
+        }
 
         gameMap.create(buttonLeft, buttonRight);
 

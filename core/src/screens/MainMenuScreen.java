@@ -1,5 +1,6 @@
 package screens;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
@@ -37,8 +38,18 @@ public class MainMenuScreen implements Screen {
         int w = Gdx.graphics.getWidth();
         int h = Gdx.graphics.getHeight();
 
-        startButton = new ButtonType(manager.getStage(), "buttons/startButton.atlas", "Start", w/2-150, 2*h/3);
-        quitButton = new ButtonType(manager.getStage(), "buttons/startButton.atlas", "Quit", w/2-150, h/3);
+
+        if (Gdx.app.getType() == Application.ApplicationType.Android) {
+
+            startButton = new ButtonType(manager.getStage(), "buttons/androidStart.atlas", "Start", w/2-150, 2*h/3, 2f, 3f);
+            quitButton = new ButtonType(manager.getStage(), "buttons/androidStart.atlas", "Quit", w/2-150, h/3, 2f, 3f);
+
+        } else {
+            startButton = new ButtonType(manager.getStage(), "buttons/desktopStart.atlas", "Start", w/2-150, 2*h/3 ,1f);
+            quitButton = new ButtonType(manager.getStage(), "buttons/desktopStart.atlas", "Quit", w/2-150, h/3,1f );
+        }
+
+
 
         startButton.create();
         quitButton.create();

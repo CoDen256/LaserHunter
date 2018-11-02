@@ -1,26 +1,26 @@
 rightButton.png
-size: 52, 69
+size: 200, 390
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 buttonDown
   rotate: false
-  xy: 1, 38
-  size: 44, 30
-  orig: 50, 35
-  offset: 3, 3
+  xy: 0, 0
+  size: 200, 130
+  orig: 200, 130
+  offset: 0, 0
   index: -1
 buttonOver
   rotate: false
-  xy: 1, 1
-  size: 50, 35
-  orig: 50, 35
+  xy: 0, 130
+  size: 200, 130
+  orig: 200, 130
   offset: 0, 0
   index: -1
 buttonUp
   rotate: false
-  xy: 1, 1
-  size: 50, 35
-  orig: 50, 35
+  xy: 0, 260
+  size: 200, 130
+  orig: 200, 130
   offset: 0, 0
   index: -1

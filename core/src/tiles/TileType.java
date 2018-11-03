@@ -1,5 +1,6 @@
 package tiles;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import java.util.HashMap;
@@ -17,19 +18,21 @@ public enum TileType {
 
 
     //  Spikes: damage 100
-    SPIKESLEFT(7, true, "SpikesLeft", 100, false,false, false),
-    SPIKESRIGHT(8, true, "SpikesRight", 100, false,false, false),
-    SPIKESUP(9, true, "SpikesUp", 100, false,false, false),
-    SPIKESDOWN(10, true, "SpikesDown", 100, false,false, false),
+    SPIKESLEFT(7, true, "SpikesLeft", 50, false,false, false),
+    SPIKESRIGHT(8, true, "SpikesRight", 50, false,false, false),
+    SPIKESUP(9, true, "SpikesUp", 50, false,false, false),
+    SPIKESDOWN(10, true, "SpikesDown", 50, false,false, false),
 
     // Liquid ForceDealers (Uncollidable)
     LAVA(11, false, "Lava", 10, false,true, false), // damage 10
     WATER(12, false, "Water", 0, false,true, false),
     HEALINGLAKE(15, false, "HealingLake", -10, false,true, false), // heal 10
+    SLOWINGDIRT(29, false, "SlowingDirt", 0, false, true, false), // making liquid friction more
 
     // Solid ForceDealers
     ICE(13, true, "Ice", 0, false,false, false), // making friction less
     JELL(14, true, "Jell", 0, false,false, false), // making jump higher
+
 
 
     //Uncollidalble Visual Background
@@ -53,13 +56,13 @@ public enum TileType {
     VERTICALPLATFORM(28, true, "VerticalPlatform", 0, true,false, false),
 
     //Collectible
-    SapphireCoin(29, false, "SapphireCoin", 0, false,false, true),
-    GoldCoin(30, false, "GoldCoin", 0, false,false, true),
-    DiamondCoin(31, false, "DiamondCoin", 0, false,false, true),
-    PlatinumCoin(32, false, "PlatinumCoin", 0, false,false, true),
-    Star(33, false, "Star", 0, false,false, true),
-    HealthPotion(34, false, "HealthPotion", 0, false,false, true),
-    EnergyPotion(35, false, "EnergyPotion", 0, false,false, true),
+    SapphireCoin(32, false, "SapphireCoin", 0, false,false, true),
+    GoldCoin(33, false, "GoldCoin", 0, false,false, true),
+    DiamondCoin(34, false, "DiamondCoin", 0, false,false, true),
+    PlatinumCoin(35, false, "PlatinumCoin", 0, false,false, true),
+    Star(36, false, "Star", 0, false,false, true),
+    HealthPotion(37, false, "HealthPotion", 0, false,false, true),
+    EnergyPotion(38, false, "EnergyPotion", 0, false,false, true),
 
     ;
 
@@ -112,6 +115,13 @@ public enum TileType {
         return collectible;
     }
 
+    public boolean isDamageDealer() {
+        if (damage != 0) {
+            return  true;
+        }
+        return false;
+    }
+
     private static HashMap<Integer, TileType> tileMap;
 
     static {
@@ -120,6 +130,13 @@ public enum TileType {
         for (TileType tileType : TileType.values()) {
             tileMap.put(tileType.getId(), tileType);
         }
+    }
+
+
+
+
+    public void deleteTile() {
+
     }
 
     public static TileType getTileTypeById(int id) {

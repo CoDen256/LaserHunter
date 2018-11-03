@@ -15,23 +15,10 @@ public class Player extends Entity {
 
     Texture image;
 
-
-    private static final int SPEED = 175;
-    private static final int SPEED_STEP = 6500*49;
-    private static final float ICE_FRICTION = 0.005f;
-    private static final float INITIAL_FRICTION = 1.2f; // 0.8f and not grounded
-    private static final float WATER_FRICTIONX = 0.0007f;
-    private static final float WATER_FRICTIONY = 0.001f;
-    private static final int JUMP_STEP = 10*49*49*59; // vel * weight * weight * 1/ dt
-
-    private static final float waterDensity = 10f;
-
     protected int movingDirection;
 
     // float spawnRadius;
     // 29х50
-
-
 
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
@@ -53,20 +40,22 @@ public class Player extends Entity {
         floating = false;
         current_friction = INITIAL_FRICTION;
 
+        maxForce = SPEED_STEP;
+
     }
 
     @Override
     public void update(float deltatime) {
-        //Gdx.app.log("deltatime", "" + deltatime);
-
         totalForceX = potentialForceX;
         potentialForceX = 0;
 
         totalForceY = potentialForceY;
         potentialForceY = 0;
+        //Gdx.app.log(starCollected + "", coins+"");
+        //Gdx.app.log("health", health + "");
 
-
-        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && floating) {
+        // Y-movement in liquids
+        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && (floating)) {
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
 
                 totalForceY += JUMP_STEP/10;
@@ -85,13 +74,13 @@ public class Player extends Entity {
             }}
 
 
+        // Y-movement
         if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && grounded && !floating && jumpTick == 0) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
 
                 this.jumpTick ++;
-                //moveY(getJumpVelocity());
-
                 totalForceY += JUMP_STEP;
+
             }else if (Gdx.input.isTouched(1)) {
 
                 if (Gdx.input.getX(1) > Gdx.graphics.getWidth() / 2) {
@@ -106,7 +95,7 @@ public class Player extends Entity {
             }
 
 
-
+            // Double Jump
         } else if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && !grounded && jumpTick == 1 &&
                 10*getJumpVelocity() > velY && velY > -60*getJumpVelocity() && !floating) {
 
@@ -131,14 +120,13 @@ public class Player extends Entity {
 
         }
 
+        // Left movement
         if (Gdx.input.isKeyPressed(Input.Keys.A) || this.movingDirection == -1) {
-            //Gdx.app.log("moving", "left");
             totalForceX += -SPEED_STEP;
 
-
         }
+        // Right movement
         if (Gdx.input.isKeyPressed(Input.Keys.D) || this.movingDirection == 1) {
-            //Gdx.app.log("moving", "right");
             totalForceX += SPEED_STEP;
         }
 
@@ -155,21 +143,21 @@ public class Player extends Entity {
 
         if (floating) {
             floating = false;
-            updateFloating(waterDensity, getG());
+            updateFloating(WATER_DENSITY, G);
             updateLiquidResistX(WATER_FRICTIONX);
             updateLiquidResistY(WATER_FRICTIONY);
         }
 
         if (sliding) {
-            current_friction = ICE_FRICTION;
             sliding = false;
-        } else {
+            current_friction = ICE_FRICTION;
+
+        }else {
             current_friction = INITIAL_FRICTION;
         }
 
 
-
-        updateGravity(getG());
+        updateGravity(G);
 
         updateVelocityX(totalForceX, deltatime);
         updateVelocityY(totalForceY, deltatime);
@@ -177,8 +165,6 @@ public class Player extends Entity {
 
         super.update(deltatime);
 
-
-        //moveX(SPEED*deltatime);
 
     }
 

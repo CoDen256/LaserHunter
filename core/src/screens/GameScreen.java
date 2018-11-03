@@ -40,6 +40,8 @@ public class GameScreen implements Screen {
         int w = 400;
         int h = 300;
 
+        w = 1000;
+
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
 

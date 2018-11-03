@@ -2,8 +2,10 @@
 {
 	class: snapshot.EntitySnapshot
 	type: player
-	x: 1500
-	y: 2500
-	health: 100
+	x: 3000
+	y: 50
+	health: 1000
+	energy: 1000
+	density: 10.4
 }
 ]

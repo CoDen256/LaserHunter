@@ -4,7 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector2;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import buttons.ButtonType;
 import entities.Entity;
@@ -15,6 +20,7 @@ public abstract class GameMap {
 
     protected ArrayList<Entity> entities;
 
+    protected TiledMap tiledMap;
 
     public GameMap() {
 
@@ -102,9 +108,30 @@ public abstract class GameMap {
 
                     if (type != null) {
                         if (type.isForceDealer()) {
+
                             entities.get(0).setFloating(true);
+
                            // Gdx.app.log(type.getName(), "floating");
                         }
+                        if (type.isDamageDealer()) {
+                            entities.get(0).takeDamage(type.getDamage());
+                            //Gdx.app.log(type.getName(), "taking damage = " + type.getDamage());
+                        }
+
+                        if (type.isCollectible()) {
+
+                            Gdx.app.log(type.getName(), "collecting");
+
+                            if (type.getName() == "HealthPotion") entities.get(0).takeDamage(-500);
+                            else if (type.getName() == "EnergyPotion") entities.get(0).takeEnergy(-500);
+                            else if (type.getName().contains("Coin")) {
+                                entities.get(0).takeCoin((type.getId()-30)*5);
+                            } else if (type.getName() == "Star") {
+                                entities.get(0).takeStar();
+                            }
+                            ((TiledMapTileLayer)tiledMap.getLayers().get(layer)).getCell(col, row).setTile(null); // setCell
+                        }
+
                         if (type.isCollidable()) {
                             return type.getId();
                         }
@@ -120,6 +147,8 @@ public abstract class GameMap {
     public TileType getTileTypeByLocation(int layer, float x, float y) {
         return this.getTileTypeByCoordinate(layer, (int) x / TileType.TILE_SIZE, (int) y / TileType.TILE_SIZE);
     }
+
+
 
     public abstract TileType getTileTypeByCoordinate(int layer, int col, int row);
 

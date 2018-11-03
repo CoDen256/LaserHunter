@@ -11,10 +11,16 @@ import tiles.TileType;
 
 public abstract class Entity{
 
+
+    protected GameMap map;
+
+    // Entity properties
     protected Vector2 pos;
     protected EntityType type;
-    protected GameMap map;
+
     protected float health;
+    protected float energy;
+    protected float density;
 
 
     // Movement
@@ -29,17 +35,22 @@ public abstract class Entity{
     protected float potentialForceY;
 
 
-    protected float density;
-
     protected float current_friction;
+    protected float maxForce;
 
 
     // Player attributes
-    public ClickListener movingRightListener;
-    public ClickListener movingLeftListener;
+
+    protected int starCollected = 0;
+    protected int coins = 0;
+
 
     protected int jumpTick;
 
+    public ClickListener movingRightListener;
+    public ClickListener movingLeftListener;
+
+    // Tile Collision
     protected boolean grounded = false;
 
     protected boolean bouncing;
@@ -48,20 +59,33 @@ public abstract class Entity{
 
 
 
-    private static final int JUMP_HEIGHT = 50;
-    private static final float g = 2000;
-    private static final int JUMP_VELOCITY = 10;
 
-    private static final float MAX_SPEED = 235;
+    // Constants
+    protected static final float G = 2000;
+    protected static final int JUMP_VELOCITY = 10;
+    protected static final float MAX_SPEED = 235;
+
+    protected static final int SPEED_STEP = 6500*49;
+    protected static final int JUMP_STEP = 10*49*49*59; // vel * weight * weight * 1/ dt
+
+    protected static final float ICE_FRICTION = 0.005f;
+    protected static final float INITIAL_FRICTION = 1.2f; // 0.8f and not grounded
+
+    protected static final float WATER_FRICTIONX = 0.0007f;
+    protected static final float WATER_FRICTIONY = 0.001f;
+
+    protected static final float WATER_DENSITY = 10f;
+
 
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         this.pos = new Vector2(snapshot.getX(), snapshot.getY());
         this.health = snapshot.getHealth();
+        this.energy = snapshot.getEnergy();
+        this.density = snapshot.getDensity();
         this.type = type;
         this.map = map;
 
-        this.density = 10.4f;
     }
 
     public void update(float deltatime) {
@@ -71,8 +95,6 @@ public abstract class Entity{
 
         checkHorizontalCollision(newX);
 
-
-        //Gdx.app.log("velY", velY+"");
 
         float newY = pos.y;
         newY += this.velY * deltatime;
@@ -90,7 +112,6 @@ public abstract class Entity{
         if (collideCode == -10) {
             this.pos.x = newX;
         } else {
-            //Gdx.app.log("CollidingX", 0 + "");
             velX = 0;
             potentialForceX = -0.9f*totalForceX;
         }
@@ -100,7 +121,15 @@ public abstract class Entity{
         float newVelX = this.velX;
         newVelX =  true ? (newVelX +  force / getWeight() * deltatime) : 0 ;
         if (Math.abs(newVelX) <= MAX_SPEED) {
-            this.velX = Math.abs(newVelX) > 50 ? newVelX : 0;
+
+            if (newVelX * this.velX < 0) {
+                this.velX = 0;
+            } else {
+                this.velX = newVelX;
+            }
+            //this.velX = Math.abs(newVelX) > 50 ? newVelX : 0;
+
+
         } else {
             this.velX = (float) ((int) (Math.abs(newVelX)/newVelX)) * MAX_SPEED;
         }
@@ -108,15 +137,19 @@ public abstract class Entity{
     }
 
     public void updateFriction(float friction){
-        float newForce = totalForceX;
-        newForce =  this.velX != 0 ? newForce + (float) ((int) (Math.abs(this.velX)/this.velX)) * -getG()*getWeight()*friction : newForce;
-        totalForceX = newForce;
+        float frictionForce = getSign(this.velX) * -G*getWeight()*friction;
 
+        if (Math.abs(frictionForce) > maxForce) Gdx.app.log("frictionForce is more than maxForce:", frictionForce+"", new Exception());
+
+        if ((Math.abs(totalForceX) < Math.abs(frictionForce)) && this.velX == 0) {
+            frictionForce = -totalForceX;
+        }
+        totalForceX += frictionForce;
     }
 
     public void updateLiquidResistX(float friction) {
         float newForce = totalForceX;
-        newForce = this.velX != 0? newForce + friction * -getG()*getWeight() * velX  * getHeight() : newForce;
+        newForce = this.velX != 0? newForce + friction * -G*getWeight() * velX  * getHeight() : newForce;
         totalForceX = newForce;
     }
 
@@ -125,7 +158,6 @@ public abstract class Entity{
         int collideCode = map.getCollision(pos.x, newY, (int) getWidth(), (int) getHeight());
 
         if (collideCode != -10) {
-            //Gdx.app.log("CollidingY", ""+collideCode);
 
             TileType adjacentTile = collideCode != -1? TileType.getTileTypeById(collideCode) : null;
 
@@ -155,7 +187,7 @@ public abstract class Entity{
                     sliding = true;
                 }
 
-                }
+            }
 
         } else {
             this.pos.y =  newY;
@@ -175,7 +207,7 @@ public abstract class Entity{
 
     }
 
-    // No force applied in order to make mechanics not so realistic and easy to play
+    // No force is applied in order to make mechanics not so realistic and easy to play
     public void doubleJump() {
         this.velY = getJumpVelocity() * getWeight();
     }
@@ -192,16 +224,14 @@ public abstract class Entity{
     public void updateLiquidResistY(float friction) {
 
         float newForce = totalForceY;
-        newForce = this.velY > 0? newForce + friction * -getG()*getWidth() * velY*getWidth() : newForce;
+        newForce = this.velY > 0? newForce + friction * -G*getWidth() * velY*getWidth() : newForce;
         totalForceY = newForce;
     }
 
     public EntitySnapshot getSaveSnapshot() {
         return new EntitySnapshot(type.getId(), pos.x, pos.y);
     }
-    public Vector2 getPos() {
-        return pos;
-    }
+
 
     public EntityType getType() {
         return type;
@@ -219,9 +249,6 @@ public abstract class Entity{
         return map;
     }
 
-    public boolean isGrounded() {
-        return grounded;
-    }
 
     public float getWidth() {
         return type.getWidth();
@@ -234,13 +261,7 @@ public abstract class Entity{
     public float getWeight() {
         return type.getWeight();
     }
-    public static float getG() {
-        return g;
-    }
 
-    public static int getJumpHeight() {
-        return JUMP_HEIGHT;
-    }
 
     public static int getJumpVelocity() {
         return JUMP_VELOCITY;
@@ -252,4 +273,27 @@ public abstract class Entity{
     public void setFloating(boolean floating) {
         this.floating = floating;
     }
+
+    public void takeDamage(float amount) {
+        Gdx.app.log("Taking damage", amount + "");
+        this.health -= amount;
+    }
+
+    public void takeEnergy(float amount) {
+        Gdx.app.log("Taking energy", amount + "");
+        this.energy -= amount;
+    }
+
+    public int getSign(float n) {
+        return (int) (Math.abs(n) / n);
+    }
+
+    public void takeCoin(float amount) {
+        coins += amount;
+    }
+
+    public void takeStar() {
+        starCollected ++;
+    }
+
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.laserhunter.LaserHunterGame;
@@ -24,9 +25,10 @@ public class GameScreen implements Screen {
 
     ButtonType buttonLeft;
     ButtonType buttonRight;
+    ButtonType attackButton;
+    ButtonType defendButton;
 
     StageManager manager;
-
 
 
 
@@ -40,28 +42,35 @@ public class GameScreen implements Screen {
         int w = 400;
         int h = 300;
 
-        w = 1000;
+        //w = 1000;
+
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
 
-        Gdx.app.log("screens", "GameScreen is created");
+        Gdx.app.log("screens", "GameScreen is created: " + Gdx.graphics.getHeight()+"x"+Gdx.graphics.getHeight());
 
         gameMap = new StartMap(w,h);
 
         manager = new StageManager();
         if (Gdx.app.getType() == Application.ApplicationType.Android) {
 
-            buttonLeft = new ButtonType(manager.getStage(), "buttons/leftButton.atlas", Gdx.graphics.getWidth() / 30, h / 5);
-            buttonRight = new ButtonType(manager.getStage(), "buttons/rightButton.atlas", Gdx.graphics.getHeight() / 3, h / 5);
+            buttonLeft = new ButtonType(manager.getStage(), "buttons/leftButton.atlas", Gdx.graphics.getWidth() / 30, Gdx.graphics.getHeight() / 18);
+            buttonRight = new ButtonType(manager.getStage(), "buttons/rightButton.atlas", Gdx.graphics.getWidth() / 6.5f, Gdx.graphics.getHeight() / 18);
+
+            attackButton = new ButtonType(manager.getStage(), "buttons/attack.atlas", 7.8f*Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 25);
+            defendButton = new ButtonType(manager.getStage(), "buttons/defence.atlas", 8.85f*Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 6);
 
             buttonLeft.create();
             buttonRight.create();
+            attackButton.create();
+            defendButton.create();
         } else {
-            buttonRight = buttonLeft = null;
+            buttonRight = buttonLeft = attackButton = defendButton = null;
         }
 
-        gameMap.create(buttonLeft, buttonRight);
+        gameMap.create(buttonLeft, buttonRight, attackButton, defendButton);
+
 
 
 
@@ -70,12 +79,13 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
 
+
         clearScreen();
         update();
 
         gameMap.render(camera, this.game.batch, Gdx.graphics.getDeltaTime());
-        manager.render();
 
+        manager.render();
 
     }
 
@@ -97,6 +107,8 @@ public class GameScreen implements Screen {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
+
+
 
     @Override
     public void resize(int width, int height) {
@@ -123,4 +135,8 @@ public class GameScreen implements Screen {
     public void dispose() {
 
     }
+
+
+
 }
+

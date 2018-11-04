@@ -19,8 +19,17 @@ public abstract class Entity{
     protected EntityType type;
 
     protected float health;
+    protected float maxHealth;
     protected float energy;
+    protected float maxEnergy;
+
     protected float density;
+    protected float attackPoints;
+    protected float defendPoints;
+    protected float attackRange;
+
+    protected boolean isInDefence;
+    protected boolean isAttacking;
 
 
     // Movement
@@ -49,6 +58,8 @@ public abstract class Entity{
 
     public ClickListener movingRightListener;
     public ClickListener movingLeftListener;
+    public ClickListener attackListener;
+    public ClickListener defendListener;
 
     // Tile Collision
     protected boolean grounded = false;
@@ -81,8 +92,15 @@ public abstract class Entity{
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         this.pos = new Vector2(snapshot.getX(), snapshot.getY());
         this.health = snapshot.getHealth();
+        this.maxHealth = snapshot.getHealth();
         this.energy = snapshot.getEnergy();
+        this.maxEnergy = snapshot.getEnergy();
         this.density = snapshot.getDensity();
+
+        this.attackPoints = snapshot.getAttackPoints();
+        this.defendPoints = snapshot.getDefendPoints();
+        this.attackRange = snapshot.getAttackRange();
+
         this.type = type;
         this.map = map;
 
@@ -178,13 +196,13 @@ public abstract class Entity{
 
                     if (potentialVelocityY <= 0) {
                         Gdx.app.log("Jell", "bouncing");
-                        bouncing = true;
+                        this.bouncing = true;
                     }
                 }
 
                 if (adjacentTile.getName() == "Ice") {
                     Gdx.app.log("Ice", "sliding");
-                    sliding = true;
+                    this.sliding = true;
                 }
 
             }
@@ -228,6 +246,21 @@ public abstract class Entity{
         totalForceY = newForce;
     }
 
+    // Combat Handlers
+    public void attack(float amount, Entity entity) {
+        Gdx.app.log("Attacking", "entity");
+    }
+
+    public void setAttacking(boolean state) {
+        //Gdx.app.log("Attacking", ""+state);
+        isAttacking = state;
+    }
+
+    public void setDefence(boolean state) {
+        //Gdx.app.log("Defending", state+"");
+        isInDefence = state;
+    }
+
     public EntitySnapshot getSaveSnapshot() {
         return new EntitySnapshot(type.getId(), pos.x, pos.y);
     }
@@ -262,6 +295,29 @@ public abstract class Entity{
         return type.getWeight();
     }
 
+    public float getHealth() {
+        return health;
+    }
+
+    public float getMaxHealth() {
+        return maxHealth;
+    }
+
+    public float getEnergy() {
+        return energy;
+    }
+
+    public float getMaxEnergy() {
+        return maxEnergy;
+    }
+
+    public float getCoins() {
+        return coins;
+    }
+
+    public float getStars() {
+        return starCollected;
+    }
 
     public static int getJumpVelocity() {
         return JUMP_VELOCITY;
@@ -277,11 +333,15 @@ public abstract class Entity{
     public void takeDamage(float amount) {
         Gdx.app.log("Taking damage", amount + "");
         this.health -= amount;
+        if (this.health < 0) this.health = 0;
+        if (this.health > maxHealth) this.health = maxHealth;
     }
 
     public void takeEnergy(float amount) {
         Gdx.app.log("Taking energy", amount + "");
         this.energy -= amount;
+        if (this.health < 0) this.energy = 0;
+        if (this.energy > maxEnergy) this.energy = maxEnergy;
     }
 
     public int getSign(float n) {

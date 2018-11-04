@@ -1,8 +1,5 @@
 package tiles;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
-
 import java.util.HashMap;
 
 public enum TileType {
@@ -18,15 +15,15 @@ public enum TileType {
 
 
     //  Spikes: damage 100
-    SPIKESLEFT(7, true, "SpikesLeft", 50, false,false, false),
-    SPIKESRIGHT(8, true, "SpikesRight", 50, false,false, false),
-    SPIKESUP(9, true, "SpikesUp", 50, false,false, false),
-    SPIKESDOWN(10, true, "SpikesDown", 50, false,false, false),
+    SPIKESLEFT(7, true, "SpikesLeft", 100, false,false, false),
+    SPIKESRIGHT(8, true, "SpikesRight", 100, false,false, false),
+    SPIKESUP(9, true, "SpikesUp", 100, false,false, false),
+    SPIKESDOWN(10, true, "SpikesDown", 100, false,false, false),
 
     // Liquid ForceDealers (Uncollidable)
-    LAVA(11, false, "Lava", 10, false,true, false), // damage 10
+    LAVA(11, false, "Lava", 2, false,true, false), // damage 2
     WATER(12, false, "Water", 0, false,true, false),
-    HEALINGLAKE(15, false, "HealingLake", -10, false,true, false), // heal 10
+    HEALINGLAKE(15, false, "HealingLake", -2, false,true, false), // heal 2
     SLOWINGDIRT(29, false, "SlowingDirt", 0, false, true, false), // making liquid friction more
 
     // Solid ForceDealers
@@ -51,7 +48,7 @@ public enum TileType {
     BUSH(26, false, "Bush", 0, false,false, false),
 
 
-    // Moving Platforms (ForceDealers)
+    // Moving Platforms
     HORIZONTALPLATFORM(27, true, "HorizontalPlatform", 0, true,false, false),
     VERTICALPLATFORM(28, true, "VerticalPlatform", 0, true,false, false),
 

@@ -11,39 +11,56 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.soap.Text;
+
 import buttons.ButtonType;
 import entities.Entity;
+import hud.TextRegion;
 import snapshot.EntityLoader;
 import tiles.TileType;
 
 public abstract class GameMap {
 
     protected ArrayList<Entity> entities;
+    protected ArrayList<TextRegion> messages;
 
     protected TiledMap tiledMap;
 
+    TextRegion message1;
+
     public GameMap() {
 
+        messages = new ArrayList<TextRegion>();
         entities = new ArrayList<Entity>();
         entities.addAll(EntityLoader.loadEntity("entities", this, entities));
 
 
     }
 
-    public void create(ButtonType buttonLeft, ButtonType buttonRight) {
+    public void create(ButtonType buttonLeft, ButtonType buttonRight, ButtonType attackButton, ButtonType defendButton) {
         if (buttonLeft != null && buttonRight != null) {
             // Applying Button Listeners to player (entities.get(0))
-            buttonLeft.getButton().addListener(entities.get(0).movingLeftListener);
-            buttonRight.getButton().addListener(entities.get(0).movingRightListener);
+            buttonLeft.getButton().addListener(getPlayer().movingLeftListener);
+            buttonRight.getButton().addListener(getPlayer().movingRightListener);
+            attackButton.getButton().addListener(getPlayer().attackListener);
+            defendButton.getButton().addListener(getPlayer().defendListener);
+
         }
+
 
 
     }
 
     public void render(OrthographicCamera camera, SpriteBatch batch, float delta) {
+
         for (Entity entity : entities) {
             entity.render(batch, delta);
         }
+
+        for (TextRegion message : messages) {
+            message.render(batch, message.target); // add lifespan to methods of message
+        }
+
 
 
 
@@ -85,8 +102,14 @@ public abstract class GameMap {
         } else if (player.getY() > (getPixelHeight()) - getResY()/2) {
             camera.position.y = getPixelHeight() - getResY()/2;
         } else {
-            camera.position.y = player.getY(); // gaps
+            camera.position.y = Math.round(player.getY() * TileType.TILE_SIZE) / TileType.TILE_SIZE;; // gaps
         }
+
+    }
+
+    public void addMessage(String text, float width, float height, Entity target) {
+        TextRegion newMessage = new TextRegion(text, 0.8f, 0.8f, width*getRateX()/2, height*getRateY()/2, "HUD/bubble.png", target);
+        messages.add(newMessage);
 
     }
 
@@ -109,12 +132,14 @@ public abstract class GameMap {
                     if (type != null) {
                         if (type.isForceDealer()) {
 
-                            entities.get(0).setFloating(true);
+                            getPlayer().setFloating(true);
+                            //addMessage("Fuck i cant swim help pls", 100, 50, getPlayer());
 
                            // Gdx.app.log(type.getName(), "floating");
                         }
                         if (type.isDamageDealer()) {
-                            entities.get(0).takeDamage(type.getDamage());
+                            //addMessage(" Ouch", 50, 25, getPlayer());
+                            getPlayer().takeDamage(type.getDamage());
                             //Gdx.app.log(type.getName(), "taking damage = " + type.getDamage());
                         }
 
@@ -122,12 +147,12 @@ public abstract class GameMap {
 
                             Gdx.app.log(type.getName(), "collecting");
 
-                            if (type.getName() == "HealthPotion") entities.get(0).takeDamage(-500);
-                            else if (type.getName() == "EnergyPotion") entities.get(0).takeEnergy(-500);
+                            if (type.getName() == "HealthPotion") getPlayer().takeDamage(-500);
+                            else if (type.getName() == "EnergyPotion") getPlayer().takeEnergy(-500);
                             else if (type.getName().contains("Coin")) {
-                                entities.get(0).takeCoin((type.getId()-30)*5);
+                                getPlayer().takeCoin((type.getId()-30)*5);
                             } else if (type.getName() == "Star") {
-                                entities.get(0).takeStar();
+                                getPlayer().takeStar();
                             }
                             ((TiledMapTileLayer)tiledMap.getLayers().get(layer)).getCell(col, row).setTile(null); // setCell
                         }
@@ -163,6 +188,9 @@ public abstract class GameMap {
         return this.getHeight() * TileType.TILE_SIZE;
     }
 
+    public abstract float getRateX();
+    public abstract float getRateY();
+
     public abstract int getResX(); // Pixels in Window width
 
     public abstract int getResY(); // Pixels in Window height
@@ -172,6 +200,10 @@ public abstract class GameMap {
     public abstract int getHeight(); // Map height in tiles
 
     public abstract int getLayers(); // number of Map layers
+
+    public Entity getPlayer() {
+        return entities.get(0);
+    }
 
 
 

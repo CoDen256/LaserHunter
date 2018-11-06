@@ -11,25 +11,18 @@ import tiles.TileType;
 public class GuardCat extends Entity {
 
     Texture image;
-    float healPoints, visionRange;
+    float healPoints, visionRange, movementRadius;
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         super.create(snapshot, type, map);
 
         image = new Texture(Gdx.files.internal("GuardCat.png"));
 
-        setDefence(false);
-        setAttacking(false);
-
         healPoints = snapshot.getHealPoints();
         visionRange = snapshot.getVisionRange();
+        movementRadius = snapshot.getMovementRadius();
 
-        bouncing = false;
-        sliding = false;
-        floating = false;
-        current_friction = INITIAL_FRICTION;
-
-        maxForce = SPEED_STEP;
+        map.addHealthBar(this);
 
     }
 
@@ -46,13 +39,27 @@ public class GuardCat extends Entity {
             //Gdx.app.log(getType().getId()+" can see", closest.getType().getId());
         }
 
+        if (grounded || jumpTick == 1) {
+            moveToRight(SPEED_STEP/3);
+        }
+
+
+        if (xCollision && grounded) {
+            jump();
+            xCollision = false;
+        }
         updatePhysics(); // Applying physics to entity and adding forces
 
         updateVelocity(totalForceX, totalForceY, deltatime);
 
+
+
+        takeDamage(-10*deltatime);
+
         combatUpdate(deltatime); // Combat handling
 
         super.update(deltatime);
+
 
     }
 

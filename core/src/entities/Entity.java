@@ -62,6 +62,10 @@ public abstract class Entity{
     public ClickListener attackListener;
     public ClickListener defendListener;
 
+
+    // NPC attributes
+    boolean xCollision;
+
     // Tile Collision
     protected boolean grounded = false;
 
@@ -108,6 +112,21 @@ public abstract class Entity{
         this.type = type;
         this.map = map;
 
+
+        setDefence(false);
+        setAttacking(false);
+
+        jumpTick = 0;
+
+        xCollision = false;
+
+        bouncing = false;
+        sliding = false;
+        floating = false;
+        current_friction = INITIAL_FRICTION;
+
+        maxForce = SPEED_STEP;
+
     }
 
     public void update(float deltatime) {
@@ -148,11 +167,13 @@ public abstract class Entity{
 
     // Y-Movement
     public void jump() {
+        jumpTick ++;
         totalForceY += JUMP_STEP;
     }
 
     public void doubleJump(float energy) {
         if (takeEnergy(energy)){
+            jumpTick ++;
             this.velY = getJumpVelocity() * getWeight(); // No force is applied in order to make mechanics not so realistic and easy to play
         }
 
@@ -239,6 +260,7 @@ public abstract class Entity{
         } else {
             velX = 0;
             potentialForceX = -0.9f*totalForceX;
+            xCollision = true;
         }
     }
     public void updateVelocityX(float force, float deltatime) {

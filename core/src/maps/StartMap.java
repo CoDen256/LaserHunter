@@ -16,6 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import java.util.HashMap;
 
+import hud.HealthBar;
 import tiles.TileType;
 
 public class StartMap extends GameMap {
@@ -31,7 +32,9 @@ public class StartMap extends GameMap {
 
 
     ShapeRenderer shapeRenderer;
+    ShapeRenderer shapeBarRenderer;
     SpriteBatch hudBatch;
+    SpriteBatch hudBarBatch;
     Texture bar;
     BitmapFont font;
 
@@ -61,7 +64,9 @@ public class StartMap extends GameMap {
 
         // Hud render
         shapeRenderer = new ShapeRenderer();
+        shapeBarRenderer = new ShapeRenderer();
         hudBatch = new SpriteBatch();
+        hudBarBatch = new SpriteBatch();
 
         playerMaxHealth = this.getPlayer().getMaxHealth();
         playerMaxEnergy = this.getPlayer().getMaxEnergy();
@@ -92,7 +97,9 @@ public class StartMap extends GameMap {
 
         batch.end();
 
+        drawEntityHealthBar(camera);
         drawHUD();
+
 
 
 
@@ -112,10 +119,14 @@ public class StartMap extends GameMap {
 
         hudBatch.begin();
 
+
+
         hudBatch.draw(bar, xBar, yBar1, bar.getWidth()*rateX, bar.getHeight()*rateY);
         hudBatch.draw(bar, xBar, yBar2, bar.getWidth()*rateX, bar.getHeight()*rateY);
         font.draw(hudBatch, (int)getPlayer().getCoins()+"", Gdx.graphics.getWidth()*96/100, Gdx.graphics.getHeight()*29/30);
         font.draw(hudBatch, (int)getPlayer().getStars()+"", Gdx.graphics.getWidth()*96/100, Gdx.graphics.getHeight()*27/30);
+
+
 
         hudBatch.end();
 
@@ -123,6 +134,7 @@ public class StartMap extends GameMap {
 
         drawHealthBar(xBar+shiftX, yBar1+shiftY,shapeRenderer, width, height);
         drawEnergyBar(xBar+shiftX,yBar2+shiftY, shapeRenderer, width, height);
+
 
         shapeRenderer.end();
 
@@ -143,6 +155,29 @@ public class StartMap extends GameMap {
         shapeRenderer.rect(x,y,rate*width,height);
     }
 
+    public void drawEntityHealthBar(OrthographicCamera camera) {
+        shapeBarRenderer.setProjectionMatrix(camera.combined);
+
+        shapeBarRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        for (HealthBar bar : getBars()) {
+            bar.draw(shapeBarRenderer);
+        }
+
+        shapeBarRenderer.end();
+
+        hudBarBatch.setProjectionMatrix(camera.combined);
+
+        hudBarBatch.begin();
+
+        for (HealthBar bar : getBars()) {
+            bar.draw(hudBarBatch);
+        }
+
+        hudBarBatch.end();
+
+
+    }
 
     public void updateMovableTiles() {
         current_shift +=speed;

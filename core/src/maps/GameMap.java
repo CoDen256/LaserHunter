@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import buttons.ButtonType;
 import entities.Entity;
-import hud.HudBar;
+import hud.HealthBar;
 import hud.TextRegion;
 import snapshot.EntityLoader;
 import tiles.TileType;
@@ -20,7 +20,7 @@ public abstract class GameMap {
 
     protected ArrayList<Entity> entities;
     protected ArrayList<TextRegion> messages;
-    protected ArrayList<HudBar> bars;
+    protected ArrayList<HealthBar> bars;
 
     protected TiledMap tiledMap;
 
@@ -28,7 +28,9 @@ public abstract class GameMap {
     boolean messageOuchAdded;
     public GameMap() {
 
+        bars = new ArrayList<HealthBar>();
         messages = new ArrayList<TextRegion>();
+
         entities = new ArrayList<Entity>();
         entities.addAll(EntityLoader.loadEntity("entities", this, entities));
 
@@ -94,11 +96,12 @@ public abstract class GameMap {
 
     }
 
-    public void drawHealthBar(Entity entity) {
-        bars.add(new HudBar(entity));
+    public void addHealthBar(Entity entity) {
+        HealthBar newBar = new HealthBar(entity, 0.075f, 0.075f);
+        bars.add(newBar);
     }
 
-    public ArrayList<HudBar> getBars() {
+    public ArrayList<HealthBar> getBars() {
         return bars;
     }
 

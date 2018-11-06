@@ -64,11 +64,13 @@ public class Player extends Entity {
         Entity closestAttack = getClosest(this.attackRange*TileType.TILE_SIZE);
 
 
+
         updateInput(); // Handling all the input
         updatePhysics(); // Applying physics to entity and adding forces
 
         updateVelocity(totalForceX, totalForceY, deltatime);
 
+        takeEnergy(-10*deltatime); // restoring energy
         combatUpdate(deltatime, closestAttack); // Combat handling
 
         super.update(deltatime);
@@ -106,8 +108,6 @@ public class Player extends Entity {
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && grounded && !bouncing && !floating && jumpTick == 0) {
 
             if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
-                jumpTick ++;
-
                 jump();
 
             }
@@ -117,7 +117,6 @@ public class Player extends Entity {
                 && 10*getJumpVelocity() > velY && velY > -60*getJumpVelocity()) {
 
             if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking) {
-                jumpTick ++;
                 if (energy > 0) {
                     doubleJump(50);
                 }

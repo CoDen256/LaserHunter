@@ -12,6 +12,7 @@ public class EntitySnapshot {
     public float attackPoints, defendPoints;
     public float attackRange,visionRange;
     public float healPoints;
+    public float movementRadius;
     public HashMap<String, String> data;
 
     public EntitySnapshot() {
@@ -44,6 +45,10 @@ public class EntitySnapshot {
     public float getAttackPoints(){return attackPoints;}
     public float getDefendPoints(){return defendPoints;}
     public float getAttackRange(){return attackRange;}
+
+    public float getMovementRadius() {
+        return movementRadius;
+    }
 
     public String getType() {
         return type;

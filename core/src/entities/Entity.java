@@ -91,10 +91,13 @@ public abstract class Entity{
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         this.pos = new Vector2(snapshot.getX(), snapshot.getY());
+
+
         this.health = snapshot.getHealth();
         this.maxHealth = snapshot.getHealth();
         this.energy = snapshot.getEnergy();
         this.maxEnergy = snapshot.getEnergy();
+
         this.density = snapshot.getDensity();
 
         this.attackPoints = snapshot.getAttackPoints();
@@ -126,7 +129,7 @@ public abstract class Entity{
 
     // X-Axis Handlers
     public void checkHorizontalCollision(float newX) {
-        int collideCode = map.getCollision(newX, pos.y, (int) getWidth(), (int) getHeight());
+        int collideCode = map.getCollision(newX, pos.y, (int) getWidth(), (int) getHeight(), this);
         if (collideCode == -10) {
             this.pos.x = newX;
         } else {
@@ -145,7 +148,6 @@ public abstract class Entity{
             } else {
                 this.velX = newVelX;
             }
-            //this.velX = Math.abs(newVelX) > 50 ? newVelX : 0;
 
 
         } else {
@@ -171,9 +173,25 @@ public abstract class Entity{
         totalForceX = newForce;
     }
 
+    public void moveToRight() {
+        this.totalForceX += SPEED_STEP;
+    }
+
+    public void moveToLeft() {
+        this.totalForceX += -SPEED_STEP;
+    }
+
+    public void moveToRight(float amount) {
+        this.totalForceX += amount;
+    }
+
+    public void moveToLeft(float amount) {
+        this.totalForceX += -amount;
+    }
+
     // Y-Axis Handlers
     public void checkVerticalCollision(float newY) {
-        int collideCode = map.getCollision(pos.x, newY, (int) getWidth(), (int) getHeight());
+        int collideCode = map.getCollision(pos.x, newY, (int) getWidth(), (int) getHeight(), this);
 
         if (collideCode != -10) {
 
@@ -225,6 +243,13 @@ public abstract class Entity{
 
     }
 
+    public void jump() {
+        totalForceY += JUMP_STEP;
+    }
+
+    public void ascend() {
+        totalForceY += JUMP_STEP/10;
+    }
     // No force is applied in order to make mechanics not so realistic and easy to play
     public void doubleJump() {
         this.velY = getJumpVelocity() * getWeight();
@@ -246,6 +271,8 @@ public abstract class Entity{
         totalForceY = newForce;
     }
 
+
+
     // Combat Handlers
     public void attack(float amount, Entity entity) {
         Gdx.app.log("Attacking", "entity");
@@ -261,10 +288,59 @@ public abstract class Entity{
         isInDefence = state;
     }
 
+    public Entity getClosest(float range) {
+        Entity closest = null;
+        for (Entity entity : map.getEntities()) {
+            if (entity.getType().getId() != this.getType().getId()) {
+                float r = Math.abs(entity.getX() - this.getX());
+                if (r < range) {
+                    if (closest != null) {
+                        closest = r <  Math.abs(closest.getX() - this.getX()) ? entity : closest;
+                    } else {
+                        closest = entity;
+                    }
+                }
+            }
+        }
+        return closest;
+    }
+
+
+    // Player methods
+
+    public void takeCoin(float amount) {
+        coins += amount;
+    }
+
+    public void takeStar() {
+        starCollected ++;
+    }
+
+
+    public void takeDamage(float amount) {
+        Gdx.app.log("Taking damage", amount + "");
+        this.health -= amount;
+        if (this.health < 0) this.health = 0;
+        if (this.health > maxHealth) this.health = maxHealth;
+    }
+
+    public void takeEnergy(float amount) {
+        Gdx.app.log("Taking energy", amount + "");
+        this.energy -= amount;
+        if (this.health < 0) this.energy = 0;
+        if (this.energy > maxEnergy) this.energy = maxEnergy;
+    }
+
+    // Setters
+    public void setFloating(boolean floating) {
+        this.floating = floating;
+    }
+
+
+    // Getters
     public EntitySnapshot getSaveSnapshot() {
         return new EntitySnapshot(type.getId(), pos.x, pos.y);
     }
-
 
     public EntityType getType() {
         return type;
@@ -326,34 +402,10 @@ public abstract class Entity{
         return getWeight() / this.density;
     }
 
-    public void setFloating(boolean floating) {
-        this.floating = floating;
-    }
-
-    public void takeDamage(float amount) {
-        Gdx.app.log("Taking damage", amount + "");
-        this.health -= amount;
-        if (this.health < 0) this.health = 0;
-        if (this.health > maxHealth) this.health = maxHealth;
-    }
-
-    public void takeEnergy(float amount) {
-        Gdx.app.log("Taking energy", amount + "");
-        this.energy -= amount;
-        if (this.health < 0) this.energy = 0;
-        if (this.energy > maxEnergy) this.energy = maxEnergy;
-    }
-
     public int getSign(float n) {
         return (int) (Math.abs(n) / n);
     }
 
-    public void takeCoin(float amount) {
-        coins += amount;
-    }
 
-    public void takeStar() {
-        starCollected ++;
-    }
 
 }

@@ -12,7 +12,8 @@ import tiles.TileType;
 
 public enum EntityType {
 
-    PLAYER("player", 29, 55, 49, Player.class);
+    PLAYER("player", 29, 55, 49, Player.class),
+    GUARDCAT("GuardCat", 29, 55, 49, GuardCat.class);
 
     private String id;
     private int width, height;

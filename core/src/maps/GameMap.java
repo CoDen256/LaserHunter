@@ -1,20 +1,17 @@
 package maps;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.xml.soap.Text;
 
 import buttons.ButtonType;
 import entities.Entity;
+import hud.HudBar;
 import hud.TextRegion;
 import snapshot.EntityLoader;
 import tiles.TileType;
@@ -23,17 +20,19 @@ public abstract class GameMap {
 
     protected ArrayList<Entity> entities;
     protected ArrayList<TextRegion> messages;
+    protected ArrayList<HudBar> bars;
 
     protected TiledMap tiledMap;
 
-    TextRegion message1;
 
+    boolean messageOuchAdded;
     public GameMap() {
 
         messages = new ArrayList<TextRegion>();
         entities = new ArrayList<Entity>();
         entities.addAll(EntityLoader.loadEntity("entities", this, entities));
 
+        messageOuchAdded = false;
 
     }
 
@@ -58,7 +57,10 @@ public abstract class GameMap {
         }
 
         for (TextRegion message : messages) {
-            message.render(batch, message.target); // add lifespan to methods of message
+            if (message.getTick() > message.getDelay()) {
+                message.render(batch, message.getTarget());
+            }
+
         }
 
 
@@ -69,22 +71,127 @@ public abstract class GameMap {
     public void update(OrthographicCamera camera, float delta) {
 
         for (Entity entity : entities) {
-
             entity.update(delta);
-            if (entity.getType().getId() == "player") {
-                followPlayer(entity, camera);
+
+        }
+
+        followPlayer(getPlayer(), camera);
+
+
+
+        for (TextRegion message : messages) {
+            message.update(delta);
+
+            if (message.getTick() > message.getLifespan()) {
+                messages.remove(message);
+
+                if (messages.isEmpty()) break;
+
             }
         }
 
 
-        // EntityLoader.saveEntities("entities", entities);
+
+
+    }
+
+    public void drawHealthBar(Entity entity) {
+        bars.add(new HudBar(entity));
+    }
+
+    public ArrayList<HudBar> getBars() {
+        return bars;
+    }
+
+
+    public void addMessage(int id, String text,  Entity target, float width, float height, float lifespan, float delay) {
+        TextRegion newMessage = new TextRegion(id, text, target, 1f, 1f, width, height, lifespan, delay);
+        newMessage.load("HUD/bubble.png");
+
+        for (TextRegion message : messages) {
+            if ((message.getId() == newMessage.getId())) {
+                messages.remove(message);
+                messages.add(newMessage);
+                return;
+            }
+        }
+        messages.add(newMessage);
+
+
+    }
 
 
 
+    public int getCollision(float x, float y, int width, int height, Entity entity) {
+        // x + shiftLeft and x - shiftRight -  minimizing width from left and right on width*0.066f
+        float shiftLeft = width*0.18f;
+        float shiftRight = width*0.1f;
+        float shiftUp = height*0.08f;
+        if (x + shiftLeft < 0 || y < 0 || x - shiftRight + width   > getPixelWidth() || y - shiftUp + height > getPixelHeight()) {
+            return -1;
+        }
+        for (int row = (int)(y / TileType.TILE_SIZE); row < Math.ceil((y - shiftUp + height) / TileType.TILE_SIZE); row++) {
+            for (int col = (int) ((x + shiftLeft) / TileType.TILE_SIZE); col < Math.ceil(((x - shiftRight) + width) / TileType.TILE_SIZE); col++) {
+                for (int layer = 0; layer < getLayers(); layer++) {
+
+                    TileType type = getTileTypeByCoordinate(layer, col, row);
+
+                    if (type != null) {
+
+                        handleCollisions(type, layer, col, row, entity);
+
+                        if (type.isCollidable()) {
+                            return type.getId();
+                        }
+
+
+                    }
+                }
+            }
+        }
+        return -10;
     }
 
     public void dispose(){
     }
+
+    public void handleCollisions(TileType tile, int layer, int col, int row, Entity entity) {
+
+        if (tile.isLiquid()) {
+
+            entity.setFloating(true);
+
+        }
+        if (tile.isDamageDealer()) {
+            if (tile.getDamage() > 0) {
+                if (entity.getType().getId() == "player") {
+                    addMessage(0," Ouch", entity, 50, 25, 2, 0);
+                }
+
+
+
+            }
+
+            entity.takeDamage(tile.getDamage());
+        }
+
+        if (tile.isCollectible()) {
+
+            Gdx.app.log(tile.getName(), "collecting");
+
+            if (tile.getName() == "Star") {
+                entity.takeStar();
+            }else {
+                entity.takeCoin(tile.getCoins());
+                entity.takeDamage(tile.getHealth());
+                entity.takeEnergy(tile.getEnergy());
+            }
+
+            ((TiledMapTileLayer)tiledMap.getLayers().get(layer)).getCell(col, row).setTile(null); // deleting collectible
+        }
+
+    }
+
 
     public void followPlayer(Entity player, OrthographicCamera camera) {
 
@@ -107,73 +214,17 @@ public abstract class GameMap {
 
     }
 
-    public void addMessage(String text, float width, float height, Entity target) {
-        TextRegion newMessage = new TextRegion(text, 0.8f, 0.8f, width*getRateX()/2, height*getRateY()/2, "HUD/bubble.png", target);
-        messages.add(newMessage);
-
+    public Entity getPlayer() {
+        return entities.get(0);
     }
 
-
-
-    public int getCollision(float x, float y, int width, int height) {
-        // x + shiftLeft and x - shiftRight -  minimizing width from left and right on width*0.066f
-        float shiftLeft = width*0.18f;
-        float shiftRight = width*0.1f;
-        float shiftUp = height*0.08f;
-        if (x + shiftLeft < 0 || y < 0 || x - shiftRight + width   > getPixelWidth() || y - shiftUp + height > getPixelHeight()) {
-            return -1;
-        }
-        for (int row = (int)(y / TileType.TILE_SIZE); row < Math.ceil((y - shiftUp + height) / TileType.TILE_SIZE); row++) {
-            for (int col = (int) ((x + shiftLeft) / TileType.TILE_SIZE); col < Math.ceil(((x - shiftRight) + width) / TileType.TILE_SIZE); col++) {
-                for (int layer = 0; layer < getLayers(); layer++) {
-
-                    TileType type = getTileTypeByCoordinate(layer, col, row);
-
-                    if (type != null) {
-                        if (type.isForceDealer()) {
-
-                            getPlayer().setFloating(true);
-                            //addMessage("Fuck i cant swim help pls", 100, 50, getPlayer());
-
-                           // Gdx.app.log(type.getName(), "floating");
-                        }
-                        if (type.isDamageDealer()) {
-                            //addMessage(" Ouch", 50, 25, getPlayer());
-                            getPlayer().takeDamage(type.getDamage());
-                            //Gdx.app.log(type.getName(), "taking damage = " + type.getDamage());
-                        }
-
-                        if (type.isCollectible()) {
-
-                            Gdx.app.log(type.getName(), "collecting");
-
-                            if (type.getName() == "HealthPotion") getPlayer().takeDamage(-500);
-                            else if (type.getName() == "EnergyPotion") getPlayer().takeEnergy(-500);
-                            else if (type.getName().contains("Coin")) {
-                                getPlayer().takeCoin((type.getId()-30)*5);
-                            } else if (type.getName() == "Star") {
-                                getPlayer().takeStar();
-                            }
-                            ((TiledMapTileLayer)tiledMap.getLayers().get(layer)).getCell(col, row).setTile(null); // setCell
-                        }
-
-                        if (type.isCollidable()) {
-                            return type.getId();
-                        }
-
-
-                    }
-                }
-            }
-        }
-        return -10;
+    public ArrayList<Entity> getEntities() {
+        return entities;
     }
 
     public TileType getTileTypeByLocation(int layer, float x, float y) {
         return this.getTileTypeByCoordinate(layer, (int) x / TileType.TILE_SIZE, (int) y / TileType.TILE_SIZE);
     }
-
-
 
     public abstract TileType getTileTypeByCoordinate(int layer, int col, int row);
 
@@ -200,10 +251,6 @@ public abstract class GameMap {
     public abstract int getHeight(); // Map height in tiles
 
     public abstract int getLayers(); // number of Map layers
-
-    public Entity getPlayer() {
-        return entities.get(0);
-    }
 
 
 

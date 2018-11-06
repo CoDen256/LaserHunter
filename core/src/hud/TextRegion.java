@@ -9,43 +9,113 @@ import entities.Entity;
 
 public class TextRegion{
 
+    int id;
     float width;
     float height;
 
     float rateX, rateY;
+    float lifespan;
+    float delay;
+    float tick;
 
     String text;
-    public Texture surface;
+    Texture surface;
     BitmapFont font;
 
-    public Entity target;
+    Entity target;
 
-    public TextRegion(String text,float textScaleX, float textScaleY, float width, float height, String path, Entity target) {
+
+
+    public TextRegion(int id, String text, Entity target, float textScaleX, float textScaleY, float width, float height, float lifespan, float delay) {
+        this.id = id;
         this.text = text;
+        this.target = target;
+
         this.width = width;
         this.height = height;
 
-        this.target = target;
+        this.lifespan = lifespan;
+        this.delay = delay;
+        this.tick = 0;
 
-        font = new BitmapFont();
-        font.getData().setScale(textScaleX, textScaleY);
 
+        this.font = new BitmapFont();
+        this.font.getData().setScale(textScaleX, textScaleY);
+
+
+
+    }
+
+    public void load(String path) {
         this.surface = new Texture(path);
 
-        rateX = this.surface.getWidth()/width;
-        rateY = this.surface.getHeight()/height;
+        this.rateX = this.surface.getWidth()/width;
+        this.rateY = this.surface.getHeight()/height;
     }
 
     public void render(SpriteBatch batch, Entity entity) {
 
-        float x = entity.getX() + 1*entity.getWidth()/9;
-        float y = entity.getY() + 9.5f*entity.getHeight()/10;
+        float x = entity.getX() ;
+        float y = entity.getY() + entity.getHeight();
 
-        float shiftX = width/10;
-        float shiftY = height*8.75f/10;
+        float shiftX = -width/5;
+        float shiftY = this.height;
 
-        batch.draw(this.surface, x, y, width, height);
-        this.font.draw(batch, this.text, x+shiftX, y+shiftY, width-shiftX, 10, true);
+        this.font.draw(batch, this.text, x+shiftX, y+shiftY, this.width, 10, true);
     }
 
+    public void update(float delta) {
+
+        this.tick += delta;
+
+
+    }
+
+    public Entity getTarget() {
+        return target;
+    }
+
+    public float getLifespan() {
+        return lifespan;
+    }
+
+    public float getDelay() {
+        return delay;
+    }
+
+    public Texture getSurface() {
+        return surface;
+    }
+
+    public float getTick() {
+        return tick;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public float getRateX() {
+        return rateX;
+    }
+
+    public float getRateY() {
+        return rateY;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public BitmapFont getFont() {
+        return font;
+    }
 }

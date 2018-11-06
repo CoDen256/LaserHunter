@@ -18,6 +18,9 @@ public class Player extends Entity {
 
     protected int movingDirection;
 
+    protected static final int xLow = Gdx.graphics.getWidth()/2;
+    protected static final int yHigh = Gdx.graphics.getHeight()*2/3;
+
     // float spawnRadius;
     // 29х50
 
@@ -57,114 +60,87 @@ public class Player extends Entity {
 
         totalForceY = potentialForceY;
         potentialForceY = 0;
-        //Gdx.app.log(starCollected + "", coins+"");
-        //Gdx.app.log("health", health + "");
 
+        Entity closest = getClosest(this.attackRange*TileType.TILE_SIZE);
+        if (closest != null) {
+           // Gdx.app.log("entity is nearby", closest.getType().getId());
+        }
+
+
+        updateInput(); // Handling all the input
+        updatePhysics(); // Applying physics to entity and adding forces
+
+        updateVelocityX(totalForceX, deltatime); // Applying forces
+        updateVelocityY(totalForceY, deltatime);
+
+        combatUpdate(deltatime); // Combat handling
+
+        super.update(deltatime);
+
+
+    }
+
+    public void combatUpdate(float deltatime) {
+        if (isInDefence) {
+
+        }
+
+        if (isAttacking) {
+
+        }
+    }
+
+
+    public void updateInput() {
         // Y-movement in liquids
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && (floating)) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+            if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
 
-                if (!isAttacking && !isInDefence) {
-                    totalForceY += JUMP_STEP/10;
-                }
+                this.ascend();
 
-            }else if (Gdx.input.isTouched(1)) {
 
-                if ((Gdx.input.getX(1) > Gdx.graphics.getWidth() / 2) && (Gdx.input.getY(1) < 2*Gdx.graphics.getHeight()/3)) {
-
-                    if (!isAttacking && !isInDefence) {
-                        totalForceY += JUMP_STEP/10;
-                    }
-
-                }
-            }else if (!Gdx.input.isTouched(1)){
-                if ((Gdx.input.getX(0) > Gdx.graphics.getWidth() / 2) && (Gdx.input.getY(0) < 2*Gdx.graphics.getHeight()/3)){
-
-                    if (!isAttacking && !isInDefence) {
-                        totalForceY += JUMP_STEP / 10;
-                    }
-
-                }
             }}
 
 
         // Y-movement
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && grounded && !floating && jumpTick == 0) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+        if ((Gdx.input.isKeyPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && grounded && !bouncing && !floating && jumpTick == 0) {
 
-                if (!isInDefence && !isAttacking) {
-                    this.jumpTick ++;
-                    totalForceY += JUMP_STEP;
-                }
+            if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
+                this.jumpTick ++;
 
+                this.jump();
 
-            }else if (Gdx.input.isTouched(1)) {
-
-                if ((Gdx.input.getX(1) > Gdx.graphics.getWidth() / 2) && (Gdx.input.getY(1) < 2*Gdx.graphics.getHeight()/3)) {
-                    if (!isInDefence && !isAttacking) {
-                        this.jumpTick ++;
-                        totalForceY += JUMP_STEP;
-                    }
-                }
-            }else if (!Gdx.input.isTouched(1)){
-                if ((Gdx.input.getX(0) > Gdx.graphics.getWidth() / 2) && (Gdx.input.getY(0) < 2*Gdx.graphics.getHeight()/3)){
-                    if (!isInDefence && !isAttacking) {
-                        this.jumpTick ++;
-                        totalForceY += JUMP_STEP;
-                    }
-                }
             }
-
 
             // Double Jump
-        } else if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && !grounded && jumpTick == 1 &&
-                10*getJumpVelocity() > velY && velY > -60*getJumpVelocity() && !floating) {
+        } else if ((Gdx.input.isKeyPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && !grounded && !floating && jumpTick == 1
+                && 10*getJumpVelocity() > velY && velY > -60*getJumpVelocity()) {
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-
-                if (!isInDefence && !isAttacking) {
-                    this.jumpTick ++;
-                    doubleJump();
-                }
-
-            }else if (Gdx.input.isTouched(1)) {
-
-                if ((Gdx.input.getX(1) > Gdx.graphics.getWidth() / 2) && (Gdx.input.getY(1) < 2*Gdx.graphics.getHeight()/3)) {
-                    if (!isInDefence && !isAttacking) {
-                        this.jumpTick ++;
-                        doubleJump();
-                    }
-                }
-            }else if (!Gdx.input.isTouched(1)){
-                if ((Gdx.input.getX(0) > Gdx.graphics.getWidth() / 2) && (Gdx.input.getY(0) < 2*Gdx.graphics.getHeight()/3)){
-                    if (!isInDefence && !isAttacking) {
-                        this.jumpTick ++;
-                        doubleJump();
-                    }
-                }
+            if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking) {
+                this.jumpTick ++;
+                doubleJump();
             }
-
 
 
         }
 
         // Left movement
         if (Gdx.input.isKeyPressed(Input.Keys.A) || this.movingDirection == -1) {
-            totalForceX += -SPEED_STEP;
+            this.moveToLeft();
 
         }
         // Right movement
         if (Gdx.input.isKeyPressed(Input.Keys.D) || this.movingDirection == 1) {
-            totalForceX += SPEED_STEP;
+            this.moveToRight();
         }
 
         if(Gdx.app.getType() == Application.ApplicationType.Desktop){
             if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) setAttacking(true); else setAttacking(false);
             if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) setDefence(true); else setDefence(false);
         }
+    }
 
-
-
+    public void updatePhysics() {
         if (grounded && !floating) {
             updateFriction(current_friction);
         }
@@ -190,41 +166,25 @@ public class Player extends Entity {
             current_friction = INITIAL_FRICTION;
         }
 
-
         updateGravity(G);
-
-        updateVelocityX(totalForceX, deltatime);
-        updateVelocityY(totalForceY, deltatime);
-
-
-        combatUpdate(deltatime);
-
-        super.update(deltatime);
-
-
     }
 
 
 
-    @Override
-    public void render(SpriteBatch batch, float delta) {
-        batch.draw(this.image, this.getX(), this.getY());
-    }
-
-
-    public void combatUpdate(float deltatime) {
-        if (isInDefence) {
-
-        }
-
-        if (isAttacking) {
-
-        }
+    public boolean isSecondTap(float xLow, float yHigh) {
+        return ( (Gdx.input.isTouched(1) && (Gdx.input.getX(1) > xLow) && (Gdx.input.getY(1) < yHigh) )
+                || (!Gdx.input.isTouched(1) && (Gdx.input.getX(0) > xLow) && (Gdx.input.getY(0) < yHigh) )
+                || (Gdx.input.isKeyPressed(Input.Keys.SPACE)) );
     }
 
 
     public void setMovingDirection(int direction) {
         this.movingDirection = direction;
+    }
+
+    @Override
+    public void render(SpriteBatch batch, float delta) {
+        batch.draw(this.image, this.getX(), this.getY());
     }
 
     // SnapShot Handler
@@ -234,6 +194,7 @@ public class Player extends Entity {
         //snapshot.putFloat("spawnRadius", 50);
         return snapshot;
     }
+
 
     // Button Listeners
 

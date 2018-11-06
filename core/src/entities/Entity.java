@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import maps.GameMap;
+import screens.MainMenuScreen;
 import snapshot.EntitySnapshot;
 import tiles.TileType;
 
@@ -127,6 +128,109 @@ public abstract class Entity{
 
     public abstract void render(SpriteBatch batch, float delta);
 
+    /* MOVEMENT */
+    //X-Movement
+    public void moveToRight() {
+        this.totalForceX += SPEED_STEP;
+    }
+
+    public void moveToLeft() {
+        this.totalForceX += -SPEED_STEP;
+    }
+
+    public void moveToRight(float amount) {
+        this.totalForceX += amount;
+    }
+
+    public void moveToLeft(float amount) {
+        this.totalForceX += -amount;
+    }
+
+    // Y-Movement
+    public void jump() {
+        totalForceY += JUMP_STEP;
+    }
+
+    public void doubleJump(float energy) {
+        if (takeEnergy(energy)){
+            this.velY = getJumpVelocity() * getWeight(); // No force is applied in order to make mechanics not so realistic and easy to play
+        }
+
+    }
+
+    public void ascend() {
+        totalForceY += JUMP_STEP/10;
+    }
+
+
+    /* PHYSICS SECTION */
+    // X-Physics
+    public void updateFriction(float friction){
+        float frictionForce = getSign(this.velX) * -G*getWeight()*friction;
+
+        if (Math.abs(frictionForce) > maxForce) Gdx.app.log("frictionForce is more than maxForce:", frictionForce+"", new Exception());
+
+        if ((Math.abs(totalForceX) < Math.abs(frictionForce)) && this.velX == 0) {
+            frictionForce = -totalForceX;
+        }
+        totalForceX += frictionForce;
+    }
+
+    public void updateLiquidResistX(float friction) {
+        float newForce = totalForceX;
+        newForce = this.velX != 0? newForce + friction * -G*getWeight() * velX  * getHeight() : newForce;
+        totalForceX = newForce;
+    }
+
+    // Y-Physics
+    public void updateGravity(float a) {
+        totalForceY += -a * getWeight();
+    }
+
+    public void updateFloating(float liquidDensity, float a) {
+        float newForce = liquidDensity * a * getVolume();
+        totalForceY += newForce;
+    }
+
+    public void updateLiquidResistY(float friction) {
+
+        float newForce = totalForceY;
+        newForce = this.velY > 0? newForce + friction * -G*getWidth() * velY*getWidth() : newForce;
+        totalForceY = newForce;
+    }
+
+    // Total Physics
+    public void updatePhysics() {
+        if (grounded && !floating) {
+            updateFriction(current_friction);
+        }
+
+        if (bouncing) {
+            bouncing = false;
+            totalForceY += JUMP_STEP*1.8;
+            jumpTick++;
+        }
+
+        if (floating) {
+            floating = false;
+            updateFloating(WATER_DENSITY, G);
+            updateLiquidResistX(WATER_FRICTIONX);
+            updateLiquidResistY(WATER_FRICTIONY);
+        }
+
+        if (sliding) {
+            sliding = false;
+            current_friction = ICE_FRICTION;
+
+        }else {
+            current_friction = INITIAL_FRICTION;
+        }
+
+        updateGravity(G);
+    }
+
+
+    /* Velocity and Collision handlers */
     // X-Axis Handlers
     public void checkHorizontalCollision(float newX) {
         int collideCode = map.getCollision(newX, pos.y, (int) getWidth(), (int) getHeight(), this);
@@ -137,7 +241,6 @@ public abstract class Entity{
             potentialForceX = -0.9f*totalForceX;
         }
     }
-
     public void updateVelocityX(float force, float deltatime) {
         float newVelX = this.velX;
         newVelX =  true ? (newVelX +  force / getWeight() * deltatime) : 0 ;
@@ -156,38 +259,6 @@ public abstract class Entity{
 
     }
 
-    public void updateFriction(float friction){
-        float frictionForce = getSign(this.velX) * -G*getWeight()*friction;
-
-        if (Math.abs(frictionForce) > maxForce) Gdx.app.log("frictionForce is more than maxForce:", frictionForce+"", new Exception());
-
-        if ((Math.abs(totalForceX) < Math.abs(frictionForce)) && this.velX == 0) {
-            frictionForce = -totalForceX;
-        }
-        totalForceX += frictionForce;
-    }
-
-    public void updateLiquidResistX(float friction) {
-        float newForce = totalForceX;
-        newForce = this.velX != 0? newForce + friction * -G*getWeight() * velX  * getHeight() : newForce;
-        totalForceX = newForce;
-    }
-
-    public void moveToRight() {
-        this.totalForceX += SPEED_STEP;
-    }
-
-    public void moveToLeft() {
-        this.totalForceX += -SPEED_STEP;
-    }
-
-    public void moveToRight(float amount) {
-        this.totalForceX += amount;
-    }
-
-    public void moveToLeft(float amount) {
-        this.totalForceX += -amount;
-    }
 
     // Y-Axis Handlers
     public void checkVerticalCollision(float newY) {
@@ -198,13 +269,13 @@ public abstract class Entity{
             TileType adjacentTile = collideCode != -1? TileType.getTileTypeById(collideCode) : null;
 
             if (velY < 0) {
-                this.pos.y = (float) Math.floor(pos.y);
+                pos.y = (float) Math.floor(pos.y);
                 grounded = true;
                 jumpTick = 0; }
 
 
             potentialVelocityY = this.velY;
-            this.velY = 0;
+            velY = 0;
 
 
             // Collision Handlers
@@ -213,25 +284,21 @@ public abstract class Entity{
 
 
                     if (potentialVelocityY <= 0) {
-                        Gdx.app.log("Jell", "bouncing");
-                        this.bouncing = true;
+                        bouncing = true;
                     }
                 }
 
                 if (adjacentTile.getName() == "Ice") {
-                    Gdx.app.log("Ice", "sliding");
-                    this.sliding = true;
+                    sliding = true;
                 }
 
             }
 
         } else {
-            this.pos.y =  newY;
+            pos.y =  newY;
             grounded = false;
         }
     }
-
-
     public void updateVelocityY(float force, float deltatime) {
         float newVelY = this.velY;
         newVelY = newVelY + force/getWeight()*deltatime;
@@ -243,39 +310,22 @@ public abstract class Entity{
 
     }
 
-    public void jump() {
-        totalForceY += JUMP_STEP;
-    }
-
-    public void ascend() {
-        totalForceY += JUMP_STEP/10;
-    }
-    // No force is applied in order to make mechanics not so realistic and easy to play
-    public void doubleJump() {
-        this.velY = getJumpVelocity() * getWeight();
-    }
-
-    public void updateGravity(float a) {
-        totalForceY += -a * getWeight();
-    }
-
-    public void updateFloating(float liquidDensity, float a) {
-        float newForce = liquidDensity * a * getVolume();
-        totalForceY += newForce;
-    }
-
-    public void updateLiquidResistY(float friction) {
-
-        float newForce = totalForceY;
-        newForce = this.velY > 0? newForce + friction * -G*getWidth() * velY*getWidth() : newForce;
-        totalForceY = newForce;
+    // Total Velocity Handler
+    public void updateVelocity(float forceX, float forceY, float deltatime) {
+        updateVelocityX(forceX, deltatime);
+        updateVelocityY(forceY, deltatime);
     }
 
 
-
+    /* COMBAT */
     // Combat Handlers
     public void attack(float amount, Entity entity) {
-        Gdx.app.log("Attacking", "entity");
+        if (entity != null) {
+            Gdx.app.log("Attacking "+amount, entity.getType().getId());
+            entity.takeDamage(amount);
+
+        }
+
     }
 
     public void setAttacking(boolean state) {
@@ -292,10 +342,10 @@ public abstract class Entity{
         Entity closest = null;
         for (Entity entity : map.getEntities()) {
             if (entity.getType().getId() != this.getType().getId()) {
-                float r = Math.abs(entity.getX() - this.getX());
+                float r = getRadius(entity.getX(), entity.getY(), this.getX(), this.getY());
                 if (r < range) {
                     if (closest != null) {
-                        closest = r <  Math.abs(closest.getX() - this.getX()) ? entity : closest;
+                        closest = r <  getRadius(closest.getX(), closest.getY(), this.getX(), this.getY()) ? entity : closest;
                     } else {
                         closest = entity;
                     }
@@ -306,6 +356,8 @@ public abstract class Entity{
     }
 
 
+
+    /* DEFAULT METHODS */
     // Player methods
 
     public void takeCoin(float amount) {
@@ -318,17 +370,23 @@ public abstract class Entity{
 
 
     public void takeDamage(float amount) {
-        Gdx.app.log("Taking damage", amount + "");
-        this.health -= amount;
-        if (this.health < 0) this.health = 0;
-        if (this.health > maxHealth) this.health = maxHealth;
+        health -= amount;
+        if (health < 0) health = 0;
+        if (health > maxHealth) health = maxHealth;
     }
 
-    public void takeEnergy(float amount) {
-        Gdx.app.log("Taking energy", amount + "");
-        this.energy -= amount;
-        if (this.health < 0) this.energy = 0;
-        if (this.energy > maxEnergy) this.energy = maxEnergy;
+    public boolean takeEnergy(float amount) {
+        float newEnergy = energy - amount;
+
+        if (newEnergy < 0) {
+            Gdx.app.log("energy", "not enough energy to perform an action ");
+            return false;
+        }
+
+        if (newEnergy > maxEnergy) energy = maxEnergy;
+        else energy = newEnergy;
+
+        return true;
     }
 
     // Setters
@@ -402,10 +460,14 @@ public abstract class Entity{
         return getWeight() / this.density;
     }
 
+    // Other
     public int getSign(float n) {
         return (int) (Math.abs(n) / n);
     }
 
+    public float getRadius(float x1, float y1, float x2, float y2) {
+        return (float) Math.sqrt(Math.pow((x1-x2),2) + Math.pow((y1-y2),2));
+    }
 
 
 }

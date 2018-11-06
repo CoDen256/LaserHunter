@@ -31,25 +31,25 @@ public class Player extends Entity {
 
         // spawnRadius = snapshot.getFloat("spawnRadius", 50);
 
-        this.image = new Texture(Gdx.files.internal("cat.png"));
+        image = new Texture(Gdx.files.internal("cat.png"));
 
-        this.jumpTick = 0;
-        this.movingDirection = 0;
+        jumpTick = 0;
+        movingDirection = 0;
 
-        this.movingLeftListener = LListener;
-        this.movingRightListener = RListener;
-        this.attackListener = AListener;
-        this.defendListener = DListener;
+        movingLeftListener = LListener;
+        movingRightListener = RListener;
+        attackListener = AListener;
+        defendListener = DListener;
 
-        this.setDefence(false);
-        this.setAttacking(false);
+        setDefence(false);
+        setAttacking(false);
 
-        this.bouncing = false;
-        this.sliding = false;
-        this.floating = false;
-        this.current_friction = INITIAL_FRICTION;
+        bouncing = false;
+        sliding = false;
+        floating = false;
+        current_friction = INITIAL_FRICTION;
 
-        this.maxForce = SPEED_STEP;
+        maxForce = SPEED_STEP;
 
     }
 
@@ -61,31 +61,31 @@ public class Player extends Entity {
         totalForceY = potentialForceY;
         potentialForceY = 0;
 
-        Entity closest = getClosest(this.attackRange*TileType.TILE_SIZE);
-        if (closest != null) {
-           // Gdx.app.log("entity is nearby", closest.getType().getId());
-        }
+        Entity closestAttack = getClosest(this.attackRange*TileType.TILE_SIZE);
 
 
         updateInput(); // Handling all the input
         updatePhysics(); // Applying physics to entity and adding forces
 
-        updateVelocityX(totalForceX, deltatime); // Applying forces
-        updateVelocityY(totalForceY, deltatime);
+        updateVelocity(totalForceX, totalForceY, deltatime);
 
-        combatUpdate(deltatime); // Combat handling
+        combatUpdate(deltatime, closestAttack); // Combat handling
 
         super.update(deltatime);
 
 
     }
 
-    public void combatUpdate(float deltatime) {
+    public void combatUpdate(float deltatime, Entity closest) {
         if (isInDefence) {
 
         }
 
         if (isAttacking) {
+
+            attack(attackPoints, closest);
+
+            setAttacking(false);
 
         }
     }
@@ -96,7 +96,7 @@ public class Player extends Entity {
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && (floating)) {
             if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
 
-                this.ascend();
+                ascend();
 
 
             }}
@@ -106,9 +106,9 @@ public class Player extends Entity {
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && grounded && !bouncing && !floating && jumpTick == 0) {
 
             if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
-                this.jumpTick ++;
+                jumpTick ++;
 
-                this.jump();
+                jump();
 
             }
 
@@ -117,8 +117,12 @@ public class Player extends Entity {
                 && 10*getJumpVelocity() > velY && velY > -60*getJumpVelocity()) {
 
             if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking) {
-                this.jumpTick ++;
-                doubleJump();
+                jumpTick ++;
+                if (energy > 0) {
+                    doubleJump(50);
+                }
+
+
             }
 
 
@@ -126,48 +130,20 @@ public class Player extends Entity {
 
         // Left movement
         if (Gdx.input.isKeyPressed(Input.Keys.A) || this.movingDirection == -1) {
-            this.moveToLeft();
+            moveToLeft();
 
         }
         // Right movement
         if (Gdx.input.isKeyPressed(Input.Keys.D) || this.movingDirection == 1) {
-            this.moveToRight();
+            moveToRight();
         }
 
         if(Gdx.app.getType() == Application.ApplicationType.Desktop){
-            if(Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) setAttacking(true); else setAttacking(false);
-            if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) setDefence(true); else setDefence(false);
+            if(Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) setAttacking(true);
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) setDefence(true);
         }
     }
 
-    public void updatePhysics() {
-        if (grounded && !floating) {
-            updateFriction(current_friction);
-        }
-
-        if (bouncing) {
-            bouncing = false;
-            totalForceY += JUMP_STEP*1.8;
-            jumpTick++;
-        }
-
-        if (floating) {
-            floating = false;
-            updateFloating(WATER_DENSITY, G);
-            updateLiquidResistX(WATER_FRICTIONX);
-            updateLiquidResistY(WATER_FRICTIONY);
-        }
-
-        if (sliding) {
-            sliding = false;
-            current_friction = ICE_FRICTION;
-
-        }else {
-            current_friction = INITIAL_FRICTION;
-        }
-
-        updateGravity(G);
-    }
 
 
 
@@ -179,12 +155,12 @@ public class Player extends Entity {
 
 
     public void setMovingDirection(int direction) {
-        this.movingDirection = direction;
+        movingDirection = direction;
     }
 
     @Override
     public void render(SpriteBatch batch, float delta) {
-        batch.draw(this.image, this.getX(), this.getY());
+        batch.draw(image, getX(), getY());
     }
 
     // SnapShot Handler

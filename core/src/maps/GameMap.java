@@ -78,13 +78,12 @@ public abstract class GameMap {
         followPlayer(getPlayer(), camera);
 
 
-
         for (TextRegion message : messages) {
             message.update(delta);
 
             if (message.getTick() > message.getLifespan()) {
+                message.dispose();
                 messages.remove(message);
-
                 if (messages.isEmpty()) break;
 
             }
@@ -104,17 +103,22 @@ public abstract class GameMap {
     }
 
 
-    public void addMessage(int id, String text,  Entity target, float width, float height, float lifespan, float delay) {
-        TextRegion newMessage = new TextRegion(id, text, target, 1f, 1f, width, height, lifespan, delay);
-        newMessage.load("HUD/bubble.png");
-
+    public void addMessage(int id, int pid,String text,  Entity target, float width, float height, float lifespan, float delay) {
         for (TextRegion message : messages) {
-            if ((message.getId() == newMessage.getId())) {
-                messages.remove(message);
-                messages.add(newMessage);
-                return;
+            if (message.getPid() == pid) {
+                if (message.getId() == id) {
+                    return;
+                } else {
+                    Gdx.app.log("addMessage", "removing old message");
+                    messages.remove(message);
+                    break;
+                }
+
             }
         }
+        Gdx.app.log("addMessage", "adding new message");
+
+        TextRegion newMessage = new TextRegion(id, pid, text, target, 1f, 1f, width, height, lifespan, delay);
         messages.add(newMessage);
 
 
@@ -165,9 +169,8 @@ public abstract class GameMap {
         if (tile.isDamageDealer()) {
             if (tile.getDamage() > 0) {
                 if (entity.getType().getId() == "player") {
-                    addMessage(0," Ouch", entity, 50, 25, 2, 0);
+                    addMessage(0,0,"Ouch", entity, 50, 25, 2, 0);
                 }
-
 
 
             }

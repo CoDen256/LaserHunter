@@ -2,14 +2,15 @@
 {
 	class: snapshot.EntitySnapshot
 	type: player
-	x: 500
+	x: 3500
 	y: 2050
 	health: 1000
 	energy: 1000
 	density: 10.4
 	attackPoints: 400
-	attackRange: 5
 	defendPoints: 300
+	attackRange: 5
+
 }
 	{
 		class: snapshot.EntitySnapshot
@@ -22,29 +23,77 @@
 		attackPoints: 400
 		attackRange: 2
 		defendPoints: 300
+		visionRange: 5
+		healPoints: 500
 	}
 	{
 		class: snapshot.EntitySnapshot
 		type: GuardCat
-		x: 1500
+		x: 3550
 		y: 2050
 		health: 1000
 		energy: 1000
 		density: 10.4
 		attackPoints: 400
-		attackRange: 2
 		defendPoints: 300
+		attackRange: 2
+		visionRange: 5
+		healPoints: 500
 	}
 	{
 		class: snapshot.EntitySnapshot
 		type: GuardCat
-		x: 3500
+		x: 3600
 		y: 2050
 		health: 1000
 		energy: 1000
 		density: 10.4
 		attackPoints: 400
-		attackRange: 2
 		defendPoints: 300
+		attackRange: 2
+		visionRange: 5
+		healPoints: 500
+	}
+	{
+		class: snapshot.EntitySnapshot
+		type: GuardCat
+		x: 3650
+		y: 2050
+		health: 1000
+		energy: 1000
+		density: 10.4
+		attackPoints: 400
+		defendPoints: 300
+		attackRange: 2
+		visionRange: 5
+		healPoints: 500
+	}
+	{
+		class: snapshot.EntitySnapshot
+		type: GuardCat
+		x: 3700
+		y: 2050
+		health: 1000
+		energy: 1000
+		density: 10.4
+		attackPoints: 400
+		defendPoints: 300
+		attackRange: 2
+		visionRange: 5
+		healPoints: 500
+	}
+	{
+		class: snapshot.EntitySnapshot
+		type: GuardCat
+		x: 3450
+		y: 2050
+		health: 1000
+		energy: 1000
+		density: 10.4
+		attackPoints: 400
+		defendPoints: 300
+		attackRange: 2
+		visionRange: 5
+		healPoints: 500
 	}
 ]

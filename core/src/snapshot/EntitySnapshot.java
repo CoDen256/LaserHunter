@@ -5,10 +5,17 @@ import java.util.HashMap;
 public class EntitySnapshot {
 
     public String type;
-    public float x,y,health,density,energy,attackPoints, defendPoints,attackRange;
+    public float x,y;
+    public float health,energy;
+    public float density;
+
+    public float attackPoints, defendPoints;
+    public float attackRange,visionRange;
+    public float healPoints;
     public HashMap<String, String> data;
 
-    public EntitySnapshot() {}
+    public EntitySnapshot() {
+    }
 
     public EntitySnapshot( String type, float x, float y) {
         this.type = type;
@@ -48,6 +55,14 @@ public class EntitySnapshot {
 
     public float getY() {
         return y;
+    }
+
+    public float getVisionRange() {
+        return visionRange;
+    }
+
+    public float getHealPoints() {
+        return healPoints;
     }
 
     public void putFloat(String key, float value) {

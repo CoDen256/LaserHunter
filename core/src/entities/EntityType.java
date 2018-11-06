@@ -21,7 +21,6 @@ public enum EntityType {
 
     private Class loaderClass;
 
-
     EntityType(String id, int width, int height, float weight, Class loaderClass) {
         this.id = id;
         this.width = width;

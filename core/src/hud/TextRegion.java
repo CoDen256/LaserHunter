@@ -1,7 +1,5 @@
 package hud;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -9,26 +7,23 @@ import entities.Entity;
 
 public class TextRegion{
 
-    int id;
-    float width;
-    float height;
+    int id,pid;
+    float width,height;
 
-    float rateX, rateY;
-    float lifespan;
-    float delay;
+    float lifespan,delay;
     float tick;
 
     String text;
-    Texture surface;
     BitmapFont font;
 
     Entity target;
 
 
 
-    public TextRegion(int id, String text, Entity target, float textScaleX, float textScaleY, float width, float height, float lifespan, float delay) {
+    public TextRegion(int id, int pid, String text, Entity target, float textScaleX, float textScaleY, float width, float height, float lifespan, float delay) {
         this.id = id;
-        this.text = text;
+        this.pid = pid;
+        this.text = " " + text;
         this.target = target;
 
         this.width = width;
@@ -46,12 +41,6 @@ public class TextRegion{
 
     }
 
-    public void load(String path) {
-        this.surface = new Texture(path);
-
-        this.rateX = this.surface.getWidth()/width;
-        this.rateY = this.surface.getHeight()/height;
-    }
 
     public void render(SpriteBatch batch, Entity entity) {
 
@@ -61,14 +50,18 @@ public class TextRegion{
         float shiftX = -width/5;
         float shiftY = this.height;
 
-        this.font.draw(batch, this.text, x+shiftX, y+shiftY, this.width, 10, true);
+        font.draw(batch, this.text, x+shiftX, y+shiftY, this.width, 10, true);
     }
 
     public void update(float delta) {
 
-        this.tick += delta;
+        tick += delta;
 
 
+    }
+
+    public void dispose() {
+        font.dispose();
     }
 
     public Entity getTarget() {
@@ -83,9 +76,6 @@ public class TextRegion{
         return delay;
     }
 
-    public Texture getSurface() {
-        return surface;
-    }
 
     public float getTick() {
         return tick;
@@ -94,6 +84,9 @@ public class TextRegion{
     public int getId() {
         return id;
     }
+    public int getPid() {
+        return pid;
+    }
 
     public float getWidth() {
         return width;
@@ -101,14 +94,6 @@ public class TextRegion{
 
     public float getHeight() {
         return height;
-    }
-
-    public float getRateX() {
-        return rateX;
-    }
-
-    public float getRateY() {
-        return rateY;
     }
 
     public String getText() {

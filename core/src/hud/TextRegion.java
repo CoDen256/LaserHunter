@@ -20,7 +20,13 @@ public class TextRegion{
 
     Entity target;
 
+    public TextRegion(String text, float textScaleX, float textScaleY, float width, float height, float lifespan, float delay) {
+        this(-1, -1, text, null, textScaleX, textScaleY, width, height, lifespan, delay);
+    }
 
+    public TextRegion(String text, float textScaleX, float textScaleY, float width, float height) {
+        this(-1, -1, text, null, textScaleX, textScaleY, width, height, 0, 0);
+    }
 
     public TextRegion(int id, int pid, String text, Entity target, float textScaleX, float textScaleY, float width, float height, float lifespan, float delay) {
         this.id = id;
@@ -40,6 +46,10 @@ public class TextRegion{
         this.font.getData().setScale(textScaleX, textScaleY);
 
 
+    }
+
+    public void render(SpriteBatch batch, float x, float y) {
+        font.draw(batch, text, x, y+height, width, 10, true);
     }
 
     //For HudBatch
@@ -74,6 +84,10 @@ public class TextRegion{
 
     public float getRelative(float pos, float camPos, float window,float res) {
         return (pos - (camPos - res/2)) * window/res;
+    }
+
+    public void updateText(String text) {
+        this.text = text;
     }
 
 

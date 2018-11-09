@@ -1,5 +1,6 @@
 package hud;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -69,7 +70,6 @@ public enum Bar {
     }
 
     public void drawBar(SpriteBatch batch, float x, float y) {
-
         batch.draw(image, x, y, width, height);
     }
 

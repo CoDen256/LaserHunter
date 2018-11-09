@@ -12,19 +12,21 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import hud.Bar;
+import hud.TextRegion;
 import tiles.TileType;
 
 public class StartMap extends GameMap {
 
     ShapeRenderer shapeRenderer;
     ShapeRenderer shapeBarRenderer;
-    SpriteBatch hudBatch;
+
+    SpriteBatch HUDBatch;
     SpriteBatch hudBarBatch;
-    Texture bar;
-    BitmapFont font;
+
+    TextRegion coinsCollected;
+    TextRegion starsCollected;
 
     Bar playerBar;
-    Bar playerEnergyBar;
 
     float rateX;
     float rateY;
@@ -32,6 +34,10 @@ public class StartMap extends GameMap {
     OrthogonalTiledMapRenderer renderer;
 
     private int w,h;
+
+    private static final float BARX = Gdx.graphics.getWidth() * 1/100;
+    private static final float BARY1 = Gdx.graphics.getHeight() * 28/30;
+    private static final float BARY2 = Gdx.graphics.getHeight() * 26/30;
 
 
     public StartMap(int w, int h) {
@@ -49,11 +55,14 @@ public class StartMap extends GameMap {
         // Hud render
         shapeRenderer = new ShapeRenderer();
         shapeBarRenderer = new ShapeRenderer();
-        hudBatch = new SpriteBatch();
+
+        HUDBatch = new SpriteBatch();
         hudBarBatch = new SpriteBatch();
 
         //font = new BitmapFont();
         //font.getData().setScale(rateX, rateY);
+        coinsCollected = new TextRegion("", 1, 1, 50, 0);
+        starsCollected = new TextRegion("",1, 1, 50, 0);
 
         playerBar = Bar.HUD_BAR.apply(getPlayer(), rateX, rateY);
     }
@@ -75,55 +84,32 @@ public class StartMap extends GameMap {
         drawHUD();
 
 
-
-
-
     }
 
     public void drawHUD() {
 
-        hudBatch.begin();
+        HUDBatch.begin();
 
 
-
-        //hudBatch.draw(bar, xBar, yBar1, bar.getWidth()*rateX, bar.getHeight()*rateY);
-        //hudBatch.draw(bar, xBar, yBar2, bar.getWidth()*rateX, bar.getHeight()*rateY);
-
-        playerBar.drawBar(hudBatch, Gdx.graphics.getWidth()* 1/100, Gdx.graphics.getHeight()* 28/30);
-        playerBar.drawBar(hudBatch, Gdx.graphics.getWidth()* 1/100, Gdx.graphics.getHeight()* 26/30);
-       // playerEnergyBar.drawBar(hudBatch);
-
-        //font.draw(hudBatch, (int)getPlayer().getCoins()+"", Gdx.graphics.getWidth()*96/100, Gdx.graphics.getHeight()*29/30);
-        //font.draw(hudBatch, (int)getPlayer().getStars()+"", Gdx.graphics.getWidth()*96/100, Gdx.graphics.getHeight()*27/30);
+        playerBar.drawBar(HUDBatch, BARX, BARY1);
+        playerBar.drawBar(HUDBatch, BARX, BARY2);
 
 
+        coinsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*29/30);
+        starsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*27/30);
 
-        hudBatch.end();
+        HUDBatch.end();
+
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        playerBar.fillBar(shapeRenderer, 0,Gdx.graphics.getWidth()* 1/100, Gdx.graphics.getHeight()* 28/30);
-        playerBar.fillBar(shapeRenderer, 1, Gdx.graphics.getWidth()* 1/100, Gdx.graphics.getHeight()* 26/30);
-        //.drawEnergyBar(shapeRenderer);
+        playerBar.fillBar(shapeRenderer, 0,BARX, BARY1);
+        playerBar.fillBar(shapeRenderer, 1, BARX, BARY2);
 
 
         shapeRenderer.end();
+        
 
-
-
-    }
-    public void drawHealthBar(float x, float y, ShapeRenderer shapeRenderer, float width, float height) {
-        float rate = this.getPlayer().getHealth() / getPlayer().getMaxHealth();
-        shapeRenderer.setColor(1f, 0.4f, 0.4f, 0);
-        shapeRenderer.rect(x,y,rate*width,height);
-
-    }
-
-    public void drawEnergyBar(float x, float y, ShapeRenderer shapeRenderer, float width, float height){
-        float rate = this.getPlayer().getEnergy() / getPlayer().getMaxEnergy();
-
-        shapeRenderer.setColor(0.4f, 0.4f, 1f, 0);
-        shapeRenderer.rect(x,y,rate*width,height);
     }
 
     public void drawEntityHealthBar(OrthographicCamera camera) {
@@ -153,12 +139,17 @@ public class StartMap extends GameMap {
 
     @Override
     public void update(OrthographicCamera camera, float delta) {
+
+        coinsCollected.updateText((int)getPlayer().getCoins()+"");
+        starsCollected.updateText((int)getPlayer().getStars()+"");
+
+
         super.update(camera, delta);
     }
 
     @Override
     public void dispose() {
-        hudBatch.dispose();
+        HUDBatch.dispose();
         tiledMap.dispose();
         super.dispose();
     }

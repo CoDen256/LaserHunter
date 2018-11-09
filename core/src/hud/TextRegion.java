@@ -1,5 +1,7 @@
 package hud;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -38,19 +40,29 @@ public class TextRegion{
         this.font.getData().setScale(textScaleX, textScaleY);
 
 
-
     }
 
+    //For HudBatch
+    public void render(SpriteBatch batch, OrthographicCamera camera, float resX, float resY) {
 
-    public void render(SpriteBatch batch, Entity entity) {
+        float x = getRelative(target.getX(), camera.position.x,Gdx.graphics.getWidth(), resX);
+        float y = getRelative(target.getY()+target.getHeight(), camera.position.y, Gdx.graphics.getHeight(),resY);
 
-        float x = entity.getX() ;
-        float y = entity.getY() + entity.getHeight();
-
-        float shiftX = -width/5;
         float shiftY = this.height;
 
-        font.draw(batch, this.text, x+shiftX, y+shiftY, this.width, 10, true);
+        font.draw(batch, this.text, x, y+shiftY, this.width, 10, true);
+    }
+
+    // For MapBatch
+    public void render(SpriteBatch batch) {
+
+        float x = target.getX();
+        float y = target.getY()+target.getHeight();
+
+        float shiftX = -width / 5;
+        float shiftY = this.height;
+
+        font.draw(batch, this.text, x+shiftX, y + shiftY, this.width, 10, true);
     }
 
     public void update(float delta) {
@@ -59,6 +71,11 @@ public class TextRegion{
 
 
     }
+
+    public float getRelative(float pos, float camPos, float window,float res) {
+        return (pos - (camPos - res/2)) * window/res;
+    }
+
 
     public void dispose() {
         font.dispose();

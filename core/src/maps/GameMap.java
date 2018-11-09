@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import buttons.ButtonType;
 import entities.Entity;
-import hud.HealthBar;
+import hud.Bar;
 import hud.TextRegion;
 import snapshot.EntityLoader;
 import tiles.TileType;
@@ -20,7 +20,7 @@ public abstract class GameMap {
 
     protected ArrayList<Entity> entities;
     protected ArrayList<TextRegion> messages;
-    protected ArrayList<HealthBar> bars;
+    protected ArrayList<Bar> bars;
 
     protected TiledMap tiledMap;
 
@@ -28,7 +28,7 @@ public abstract class GameMap {
     boolean messageOuchAdded;
     public GameMap() {
 
-        bars = new ArrayList<HealthBar>();
+        bars = new ArrayList<Bar>();
         messages = new ArrayList<TextRegion>();
 
         entities = new ArrayList<Entity>();
@@ -60,7 +60,7 @@ public abstract class GameMap {
 
         for (TextRegion message : messages) {
             if (message.getTick() > message.getDelay()) {
-                message.render(batch, message.getTarget());
+                message.render(batch);
             }
 
         }
@@ -93,20 +93,22 @@ public abstract class GameMap {
 
 
 
+    }
 
+    public void dispose(){
     }
 
     public void addHealthBar(Entity entity) {
-        HealthBar newBar = new HealthBar(entity, 0.075f, 0.075f);
+        Bar newBar = Bar.ENTITY_HEALTH_BAR.apply(entity, 0.075f, 0.075f);
         bars.add(newBar);
     }
 
-    public ArrayList<HealthBar> getBars() {
+    public ArrayList<Bar> getBars() {
         return bars;
     }
 
 
-    public void addMessage(int id, int pid,String text,  Entity target, float width, float height, float lifespan, float delay) {
+    public void addMessage(int id, int pid, String text,  Entity target, float width, float height, float lifespan, float delay) {
         for (TextRegion message : messages) {
             if (message.getPid() == pid) {
                 if (message.getId() == id) {
@@ -127,6 +129,9 @@ public abstract class GameMap {
 
     }
 
+    public ArrayList<TextRegion> getMessages() {
+        return messages;
+    }
 
 
     public int getCollision(float x, float y, int width, int height, Entity entity) {
@@ -134,6 +139,7 @@ public abstract class GameMap {
         float shiftLeft = width*0.18f;
         float shiftRight = width*0.1f;
         float shiftUp = height*0.08f;
+
         if (x + shiftLeft < 0 || y < 0 || x - shiftRight + width   > getPixelWidth() || y - shiftUp + height > getPixelHeight()) {
             return -1;
         }
@@ -159,8 +165,6 @@ public abstract class GameMap {
         return -10;
     }
 
-    public void dispose(){
-    }
 
     public void handleCollisions(TileType tile, int layer, int col, int row, Entity entity) {
 
@@ -245,9 +249,6 @@ public abstract class GameMap {
         return this.getHeight() * TileType.TILE_SIZE;
     }
 
-    public abstract float getRateX();
-    public abstract float getRateY();
-
     public abstract int getResX(); // Pixels in Window width
 
     public abstract int getResY(); // Pixels in Window height
@@ -257,7 +258,5 @@ public abstract class GameMap {
     public abstract int getHeight(); // Map height in tiles
 
     public abstract int getLayers(); // number of Map layers
-
-
 
 }

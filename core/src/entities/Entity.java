@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import maps.GameMap;
-import screens.MainMenuScreen;
 import snapshot.EntitySnapshot;
 import tiles.TileType;
 

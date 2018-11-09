@@ -19,30 +19,14 @@ public class ButtonType extends Game {
 
     private String path;
     private String text;
-    private float scale, scaleX,scaleY;
 
     private float x,y;
 
     public ButtonType(Stage stage, String path, float x, float y) {
-        scale = 1;
-        this.stage = stage;
-        this.path = path;
-        this.text = "";
-        this.x = x;
-        this.y = y;
-
-        this.font = new BitmapFont();
-        this.font.getData().setScale(scale);
+        this(stage, path, "", x, y, 1, 1);
     }
     public ButtonType(Stage stage, String path, String text, float x, float y, float scale) {
-        this.stage = stage;
-        this.path = path;
-        this.text = text;
-        this.x = x;
-        this.y = y;
-
-        this.font = new BitmapFont();
-        this.font.getData().setScale(scale);
+        this(stage, path, text, x, y, scale, scale);
     }
 
     public ButtonType(Stage stage, String path, String text, float x, float y, float scaleX, float scaleY) {
@@ -79,8 +63,8 @@ public class ButtonType extends Game {
         }
         stage.addActor(button);
 
-        button.setX(this.x);
-        button.setY(this.y);
+        button.setX(x);
+        button.setY(y);
 
     }
 

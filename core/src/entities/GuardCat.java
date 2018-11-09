@@ -39,18 +39,10 @@ public class GuardCat extends Entity {
             //Gdx.app.log(getType().getId()+" can see", closest.getType().getId());
         }
 
-        if (grounded || jumpTick == 1) {
-            moveToRight(SPEED_STEP/3);
-        }
 
-
-        if (xCollision && grounded) {
-            jump();
-            xCollision = false;
-        }
         updatePhysics(); // Applying physics to entity and adding forces
 
-        updateVelocity(totalForceX, totalForceY, deltatime);
+        updateVelocity(totalForceX, totalForceY, deltatime); // updating Velocity
 
 
 
@@ -63,7 +55,17 @@ public class GuardCat extends Entity {
 
     }
 
+    public void go() {
+        if (grounded || jumpTick == 1) {
+            moveToRight(SPEED_STEP/3);
+        }
 
+
+        if (xCollision && grounded) {
+            jump();
+            xCollision = false;
+        }
+    }
 
     public void combatUpdate(float deltatime) {
         if (isInDefence) {

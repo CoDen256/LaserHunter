@@ -61,7 +61,7 @@ public class Player extends Entity {
         totalForceY = potentialForceY;
         potentialForceY = 0;
 
-        Entity closestAttack = getClosest(this.attackRange*TileType.TILE_SIZE);
+        Entity closestAttack = getClosest(this.attackRange*TileType.TILE_SIZE, null);
 
 
         updateInput(); // Handling all the input

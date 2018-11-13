@@ -104,19 +104,19 @@ public abstract class Entity{
 
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
-        this.pos = new Vector2(snapshot.getX(), snapshot.getY());
+        pos = new Vector2(snapshot.getX(), snapshot.getY());
 
 
-        this.health = type.getHealth();
-        this.maxHealth = type.getHealth();
-        this.energy = type.getEnergy();
-        this.maxEnergy = type.getEnergy();
+        health = type.getHealth();
+        maxHealth = type.getHealth();
+        energy = type.getEnergy();
+        maxEnergy = type.getEnergy();
 
-        this.density = type.getDensity();
+        density = type.getDensity();
 
-        this.attackPoints = type.getAttackPoints();
-        this.defendPoints = type.getDefendPoints();
-        this.attackRange = type.getAttackRange();
+        attackPoints = type.getAttackPoints();
+        defendPoints = type.getDefendPoints();
+        attackRange = type.getAttackRange();
 
         this.type = type;
         this.map = map;
@@ -407,13 +407,18 @@ public abstract class Entity{
         isInDefence = state;
     }
 
-    public Entity getClosest(float range) {
+    public Entity getClosest(float range, EntityType priority) {
         Entity closest = null;
         for (Entity entity : map.getEntities()) {
             if (entity.getType().getId() != this.getType().getId()) {
                 float r = getRadius(entity.getX(), entity.getY(), this.getX(), this.getY());
                 if (r < range) {
                     if (closest != null) {
+                        if (priority != null) {
+                            if (closest.getType().getId() == priority.getId()) {
+                                return closest;
+                            }
+                        }
                         closest = r <  getRadius(closest.getX(), closest.getY(), this.getX(), this.getY()) ? entity : closest;
                     } else {
                         closest = entity;
@@ -486,6 +491,14 @@ public abstract class Entity{
 
     public float getY() {
         return pos.y;
+    }
+
+    public float centerX() {
+        return pos.x + getWidth()/2;
+    }
+
+    public float centerY() {
+        return pos.y + getHeight()/2;
     }
 
     public GameMap getMap() {

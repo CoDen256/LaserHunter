@@ -34,7 +34,7 @@ public class GuardCat extends Entity {
         totalForceY = potentialForceY;
         potentialForceY = 0;
 
-        Entity closest = getClosest(visionRange * TileType.TILE_SIZE);
+        Entity closest = getClosest(visionRange * TileType.TILE_SIZE, EntityType.PLAYER);
         if (closest != null) {
             //Gdx.app.log(getType().getId()+" can see", closest.getType().getId());
         }

@@ -13,7 +13,8 @@ import snapshot.EntitySnapshot;
 public enum EntityType {
 
     PLAYER("player", 29, 55, 49, 1000, 1000, 10.4f, 400, 300, 3,Player.class),
-    GUARDCAT("GuardCat", 29, 55, 49, 500, 500, 10.4f, 400, 300, 2, GuardCat.class);
+    GUARDCAT("GuardCat", 29, 55, 49, 500, 500, 10.4f, 400, 300, 2, GuardCat.class),
+    REDLASER("RedLaser", 21, 10, 20, 8, RedLaser.class);
 
     private String id;
     private int width, height;
@@ -37,6 +38,17 @@ public enum EntityType {
 
         this.attackPoints = attackPoints;
         this.defendPoints = defendPoints;
+        this.attackRange = attackRange;
+
+        this.loaderClass = loaderClass;
+    }
+
+    EntityType(String id, int width, int height, float attackPoints, float attackRange,Class loaderClass) {
+        this.id = id;
+        this.width = width;
+        this.height = height;
+
+        this.attackPoints = attackPoints;
         this.attackRange = attackRange;
 
         this.loaderClass = loaderClass;

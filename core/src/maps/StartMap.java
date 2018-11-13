@@ -107,6 +107,9 @@ public class StartMap extends GameMap {
         for (Bar bar : getBars()) {
             bar.fill(mapHUDRenderer, 0);
         }
+
+        mapHUDRenderer.line(getPlayer().centerX(), getPlayer().centerY(), entities.get(2).centerX(), entities.get(2).centerY());
+
         mapHUDRenderer.end();
 
 

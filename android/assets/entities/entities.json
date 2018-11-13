@@ -15,4 +15,13 @@
 		healPoints: 500
 		movementRadius: 5
 	}
+
+	{
+		class: snapshot.EntitySnapshot
+		type: RedLaser
+		x: 200
+		y: 750
+	}
+
+
 ]

@@ -176,12 +176,12 @@ public abstract class GameMap {
             camera.position.x = Math.round(player.getX() * TileType.TILE_SIZE) / TileType.TILE_SIZE;
         }
 
-        if (player.getY() < getResY()/2) { // h= 150
+        if (player.getY()+25 < getResY()/2) { // h= 150
             camera.position.y = getResY()/2; // black background
         } else if (player.getY() > (getPixelHeight()) - getResY()/2) {
             camera.position.y = getPixelHeight() - getResY()/2;
         } else {
-            camera.position.y = Math.round(player.getY() * TileType.TILE_SIZE) / TileType.TILE_SIZE;; // gaps
+            camera.position.y = Math.round((player.getY()+25) * TileType.TILE_SIZE) / TileType.TILE_SIZE; // gaps
         }
 
     }

@@ -8,8 +8,8 @@ public enum TileType {
     DIRT(0, true,   "Dirt", 0,false, false),
     GRASS(1, true,  "Grass", 0,false, false),
     ROCK(2, true, "Rock", 0, false, false),
-    SLOPELEFT(3, true, "SlopeLeft", 0,false, false),
-    SLOPERIGHT(4, true, "SlopeRight", 0,false, false),
+    SLOPELEFT(3, false, "SlopeLeft", 0,false, false),
+    SLOPERIGHT(4, false, "SlopeRight", 0,false, false),
     Stone1(5, true, "Stone1", 0,false, false),
     Stone2(6, true, "Stone2", 0,false, false),
 

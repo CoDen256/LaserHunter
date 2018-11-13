@@ -6,12 +6,7 @@ public class EntitySnapshot {
 
     public String type;
     public float x,y;
-    public float health,energy;
-    public float density;
-
-    public float attackPoints, defendPoints;
-    public float attackRange,visionRange;
-    public float healPoints;
+    public float healPoints, visionRange;
     public float movementRadius;
     public HashMap<String, String> data;
 
@@ -39,12 +34,6 @@ public class EntitySnapshot {
         this.y = y;
     }
 
-    public float getHealth(){return health;}
-    public float getEnergy(){return energy;}
-    public float getDensity(){return density;}
-    public float getAttackPoints(){return attackPoints;}
-    public float getDefendPoints(){return defendPoints;}
-    public float getAttackRange(){return attackRange;}
 
     public float getMovementRadius() {
         return movementRadius;

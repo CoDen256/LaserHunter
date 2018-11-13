@@ -64,23 +64,30 @@ public class Player extends Entity {
         Entity closestAttack = getClosest(this.attackRange*TileType.TILE_SIZE);
 
 
-
         updateInput(); // Handling all the input
-        updatePhysics(); // Applying physics to entity and adding forces
+        updatePhysics(deltatime); // Applying physics to entity and adding forces
 
         updateVelocity(totalForceX, totalForceY, deltatime);
 
-        takeEnergy(-10*deltatime); // restoring energy
+        takeEnergy(RESTORE_ENERGY*deltatime); // restoring energy
         combatUpdate(deltatime, closestAttack); // Combat handling
 
         super.update(deltatime);
 
 
+        if (sloping != 0) {
+            updateSloping();
+        }
+
     }
 
     public void combatUpdate(float deltatime, Entity closest) {
         if (isInDefence) {
+            if (takeEnergy(DEFENCE_ENERGY * deltatime)) {
 
+            } else {
+                setDefence(false);
+            }
         }
 
         if (isAttacking) {
@@ -96,18 +103,17 @@ public class Player extends Entity {
     public void updateInput() {
         // Y-movement in liquids
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && (floating)) {
-            if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
+            if (isSecondTap(xLow, yHigh)){
 
                 ascend();
 
 
             }}
 
-
         // Y-movement
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && grounded && !bouncing && !floating && jumpTick == 0) {
 
-            if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking){
+            if (isSecondTap(xLow, yHigh) && !isInDefence){
                 jump();
 
             }
@@ -116,10 +122,8 @@ public class Player extends Entity {
         } else if ((Gdx.input.isKeyPressed(Input.Keys.SPACE)|| Gdx.input.isTouched()) && !grounded && !floating && jumpTick == 1
                 && 10*getJumpVelocity() > velY && velY > -60*getJumpVelocity()) {
 
-            if (isSecondTap(xLow, yHigh) && !isInDefence && !isAttacking) {
-                if (energy > 0) {
-                    doubleJump(50);
-                }
+            if (isSecondTap(xLow, yHigh)&& !isInDefence) {
+                doubleJump(DOUBLE_JUMP_ENERGY);
 
 
             }
@@ -129,17 +133,34 @@ public class Player extends Entity {
 
         // Left movement
         if (Gdx.input.isKeyPressed(Input.Keys.A) || this.movingDirection == -1) {
-            moveToLeft();
+            if (!isInDefence) {
+                moveToLeft();
+            } else {
+                moveToLeft(SPEED_STEP/2.85f);
+            }
+
 
         }
         // Right movement
         if (Gdx.input.isKeyPressed(Input.Keys.D) || this.movingDirection == 1) {
-            moveToRight();
+            if (!isInDefence) {
+                moveToRight();
+            } else {
+                moveToRight(SPEED_STEP/2.85f);
+            }
+
         }
 
         if(Gdx.app.getType() == Application.ApplicationType.Desktop){
             if(Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) setAttacking(true);
-            if(Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT)) setDefence(true);
+            if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) setDefence(true); else setDefence(false);
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K)) {
+            takeDamage(-1000);
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
+            takeEnergy(-1000);
         }
     }
 

@@ -19,22 +19,16 @@ import tiles.TileType;
 public abstract class GameMap {
 
     protected ArrayList<Entity> entities;
-    protected ArrayList<TextRegion> messages;
-    protected ArrayList<Bar> bars;
+
 
     protected TiledMap tiledMap;
 
 
-    boolean messageOuchAdded;
     public GameMap() {
-
-        bars = new ArrayList<Bar>();
-        messages = new ArrayList<TextRegion>();
 
         entities = new ArrayList<Entity>();
         entities.addAll(EntityLoader.loadEntity("entities", this, entities));
 
-        messageOuchAdded = false;
 
     }
 
@@ -58,15 +52,6 @@ public abstract class GameMap {
             entity.render(batch, delta);
         }
 
-        for (TextRegion message : messages) {
-            if (message.getTick() > message.getDelay()) {
-                message.render(batch);
-            }
-
-        }
-
-
-
 
     }
 
@@ -80,58 +65,19 @@ public abstract class GameMap {
         followPlayer(getPlayer(), camera);
 
 
-        for (TextRegion message : messages) {
-            message.update(delta);
-
-            if (message.getTick() > message.getLifespan()) {
-                message.dispose();
-                messages.remove(message);
-                if (messages.isEmpty()) break;
-
-            }
-        }
-
-
-
     }
 
     public void dispose(){
+        this.dispose();
     }
 
-    public void addHealthBar(Entity entity) {
-        Bar newBar = Bar.ENTITY_HEALTH_BAR.apply(entity, 0.075f, 0.075f);
-        bars.add(newBar);
-    }
+    public abstract void addHealthBar(Entity entity);
 
-    public ArrayList<Bar> getBars() {
-        return bars;
-    }
+    public abstract ArrayList<Bar> getBars();
 
+    public abstract void addMessage(int id, int pid, String text,  Entity target, float width, float height, float lifespan, float delay);
 
-    public void addMessage(int id, int pid, String text,  Entity target, float width, float height, float lifespan, float delay) {
-        for (TextRegion message : messages) {
-            if (message.getPid() == pid) {
-                if (message.getId() == id) {
-                    return;
-                } else {
-                    Gdx.app.log("addMessage", "removing old message");
-                    messages.remove(message);
-                    break;
-                }
-
-            }
-        }
-        Gdx.app.log("addMessage", "adding new message");
-
-        TextRegion newMessage = new TextRegion(id, pid, text, target, 1f, 1f, width, height, lifespan, delay);
-        messages.add(newMessage);
-
-
-    }
-
-    public ArrayList<TextRegion> getMessages() {
-        return messages;
-    }
+    public abstract ArrayList<TextRegion> getMessages();
 
 
     public int getCollision(float x, float y, int width, int height, Entity entity) {
@@ -167,6 +113,22 @@ public abstract class GameMap {
 
 
     public void handleCollisions(TileType tile, int layer, int col, int row, Entity entity) {
+
+
+        if (tile.getId() == 3) {
+
+            if (entity.getX() < col * TileType.TILE_SIZE) {
+                entity.setSloping(-1);
+                entity.setGrounded(true);
+            }
+
+        }
+        if (tile.getId() == 4) {
+            if (entity.getX()+entity.getWidth() > col * TileType.TILE_SIZE) {
+                entity.setSloping(1);
+                entity.setGrounded(true);
+            }
+        }
 
         if (tile.isLiquid()) {
 

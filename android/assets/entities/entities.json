@@ -4,12 +4,6 @@
 	type: player
 	x: 450
 	y: 2050
-	health: 1000
-	energy: 1000
-	density: 10.4
-	attackPoints: 400
-	defendPoints: 300
-	attackRange: 5
 
 }
 	{
@@ -17,12 +11,6 @@
 		type: GuardCat
 		x: 50
 		y: 2050
-		health: 1000
-		energy: 1000
-		density: 10.4
-		attackPoints: 400
-		attackRange: 2
-		defendPoints: 300
 		visionRange: 5
 		healPoints: 500
 		movementRadius: 5

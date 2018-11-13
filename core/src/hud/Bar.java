@@ -40,15 +40,15 @@ public enum Bar {
     // 0 - HealthBar
     // 1 - EnergyBar
 
-    public void fillBar(ShapeRenderer renderer, int bar) {
+    public void fill(ShapeRenderer renderer, int bar) {
 
         float x = entity.getX() - (width-entity.getWidth())/2;
         float y = entity.getY() + entity.getHeight() + 1 ;
 
-        fillBar(renderer, bar, x, y);
+        fill(renderer, bar, x, y);
     }
 
-    public void fillBar(ShapeRenderer renderer, int bar, float x, float y) {
+    public void fill(ShapeRenderer renderer, int bar, float x, float y) {
 
         float rate = 0;
         if (bar == 0) {
@@ -64,12 +64,12 @@ public enum Bar {
     }
 
 
-    public void drawBar(SpriteBatch batch) {
+    public void draw(SpriteBatch batch) {
 
-        drawBar(batch, entity.getX() - (width-entity.getWidth())/2, entity.getY() + entity.getHeight() + 1);
+        draw(batch, entity.getX() - (width-entity.getWidth())/2, entity.getY() + entity.getHeight() + 1);
     }
 
-    public void drawBar(SpriteBatch batch, float x, float y) {
+    public void draw(SpriteBatch batch, float x, float y) {
         batch.draw(image, x, y, width, height);
     }
 

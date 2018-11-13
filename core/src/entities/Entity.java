@@ -31,6 +31,9 @@ public abstract class Entity{
     protected boolean isInDefence;
     protected boolean isAttacking;
 
+    protected int jumpTick;
+
+
 
     // Movement
     protected float velX = 0;
@@ -54,7 +57,6 @@ public abstract class Entity{
     protected int coins = 0;
 
 
-    protected int jumpTick;
 
     public ClickListener movingRightListener;
     public ClickListener movingLeftListener;
@@ -71,6 +73,8 @@ public abstract class Entity{
     protected boolean bouncing;
     protected boolean sliding;
     protected boolean floating;
+
+    protected int sloping;
 
 
 
@@ -91,22 +95,28 @@ public abstract class Entity{
 
     protected static final float WATER_DENSITY = 10f;
 
+    protected static final float FLOATING_ENERGY = 40;
+    protected static final float DROWNING_HEALTH = 60;
+    protected static final float RESTORE_ENERGY = -10;
+    protected static final float DEFENCE_ENERGY = 50;
+    protected static final float DOUBLE_JUMP_ENERGY = 30;
+
 
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         this.pos = new Vector2(snapshot.getX(), snapshot.getY());
 
 
-        this.health = snapshot.getHealth();
-        this.maxHealth = snapshot.getHealth();
-        this.energy = snapshot.getEnergy();
-        this.maxEnergy = snapshot.getEnergy();
+        this.health = type.getHealth();
+        this.maxHealth = type.getHealth();
+        this.energy = type.getEnergy();
+        this.maxEnergy = type.getEnergy();
 
-        this.density = snapshot.getDensity();
+        this.density = type.getDensity();
 
-        this.attackPoints = snapshot.getAttackPoints();
-        this.defendPoints = snapshot.getDefendPoints();
-        this.attackRange = snapshot.getAttackRange();
+        this.attackPoints = type.getAttackPoints();
+        this.defendPoints = type.getDefendPoints();
+        this.attackRange = type.getAttackRange();
 
         this.type = type;
         this.map = map;
@@ -118,6 +128,7 @@ public abstract class Entity{
         jumpTick = 0;
 
         xCollision = false;
+        sloping = 0;
 
         bouncing = false;
         sliding = false;
@@ -220,8 +231,8 @@ public abstract class Entity{
     }
 
     // Total Physics
-    public void updatePhysics() {
-        if (grounded && !floating) {
+    public void updatePhysics(float deltatime) {
+        if ((grounded && !floating)) {
             updateFriction(current_friction);
         }
 
@@ -233,6 +244,11 @@ public abstract class Entity{
 
         if (floating) {
             floating = false;
+            if (takeEnergy(FLOATING_ENERGY*deltatime)) {
+
+            } else {
+                takeDamage(DROWNING_HEALTH*deltatime);
+            }
             updateFloating(WATER_DENSITY, G);
             updateLiquidResistX(WATER_FRICTIONX);
             updateLiquidResistY(WATER_FRICTIONY);
@@ -256,10 +272,11 @@ public abstract class Entity{
         int collideCode = map.getCollision(newX, pos.y, (int) getWidth(), (int) getHeight(), this);
         if (collideCode == -10) {
             this.pos.x = newX;
-        } else {
+        } else{
             velX = 0;
             potentialForceX = -0.9f*totalForceX;
             xCollision = true;
+
         }
     }
     public void updateVelocityX(float force, float deltatime) {
@@ -335,6 +352,37 @@ public abstract class Entity{
     public void updateVelocity(float forceX, float forceY, float deltatime) {
         updateVelocityX(forceX, deltatime);
         updateVelocityY(forceY, deltatime);
+    }
+
+    public void updateSloping() {
+        float xcolision;
+        float ycolision = pos.y;
+        if (sloping == -1) {
+            xcolision = (getX()+getWidth()*0.9f) % TileType.TILE_SIZE;
+            ycolision = (int)(getY()/TileType.TILE_SIZE)*TileType.TILE_SIZE + xcolision;
+
+
+            if (xcolision > 24) {
+                ycolision = (int)(getY()/TileType.TILE_SIZE)*TileType.TILE_SIZE + 25;
+            } else if (xcolision < 1) {
+                ycolision = (int)(getY()/TileType.TILE_SIZE)*TileType.TILE_SIZE;
+            }
+
+        } else if (sloping == 1) {
+            xcolision = (getX()+getWidth()*0.18f) % TileType.TILE_SIZE;
+            ycolision = ((int)(getY()/TileType.TILE_SIZE)+1)*TileType.TILE_SIZE - xcolision;
+
+
+            if (xcolision > 23) {
+                ycolision = ((int)(getY()/TileType.TILE_SIZE)+1)*TileType.TILE_SIZE - 25 ;
+            } else if (xcolision < 2) {
+                ycolision = ((int)(getY()/TileType.TILE_SIZE)+1)*TileType.TILE_SIZE + 0;
+            }
+
+
+        }
+        pos.y = ycolision;
+        setSloping(0);
     }
 
 
@@ -415,6 +463,13 @@ public abstract class Entity{
         this.floating = floating;
     }
 
+    public void setSloping(int state) {
+        this.sloping = state;
+    }
+
+    public void setGrounded(boolean state) {
+        this.grounded = state;
+    }
 
     // Getters
     public EntitySnapshot getSaveSnapshot() {

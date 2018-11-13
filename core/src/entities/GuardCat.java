@@ -40,7 +40,7 @@ public class GuardCat extends Entity {
         }
 
 
-        updatePhysics(); // Applying physics to entity and adding forces
+        updatePhysics(deltatime); // Applying physics to entity and adding forces
 
         updateVelocity(totalForceX, totalForceY, deltatime); // updating Velocity
 

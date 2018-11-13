@@ -2,8 +2,6 @@ package maps;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -11,28 +9,35 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
+import java.util.ArrayList;
+
+import entities.Entity;
+import entities.Player;
 import hud.Bar;
 import hud.TextRegion;
 import tiles.TileType;
 
 public class StartMap extends GameMap {
 
-    ShapeRenderer shapeRenderer;
-    ShapeRenderer shapeBarRenderer;
+    ShapeRenderer HUDRenderer;
+    ShapeRenderer mapHUDRenderer;
 
     SpriteBatch HUDBatch;
-    SpriteBatch hudBarBatch;
+    SpriteBatch mapHUDBatch;
 
     TextRegion coinsCollected;
     TextRegion starsCollected;
 
     Bar playerBar;
 
-    float rateX;
-    float rateY;
+    static ArrayList<TextRegion> messages = new ArrayList<TextRegion>();
+    static ArrayList<Bar> bars =  new ArrayList<Bar>();
+
 
     OrthogonalTiledMapRenderer renderer;
 
+    float rateX;
+    float rateY;
     private int w,h;
 
     private static final float BARX = Gdx.graphics.getWidth() * 1/100;
@@ -52,19 +57,23 @@ public class StartMap extends GameMap {
         tiledMap = new TmxMapLoader().load("map3.tmx");
         renderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        // Hud render
-        shapeRenderer = new ShapeRenderer();
-        shapeBarRenderer = new ShapeRenderer();
 
-        HUDBatch = new SpriteBatch();
-        hudBarBatch = new SpriteBatch();
 
-        //font = new BitmapFont();
-        //font.getData().setScale(rateX, rateY);
-        coinsCollected = new TextRegion("", 1, 1, 50, 0);
-        starsCollected = new TextRegion("",1, 1, 50, 0);
+
+        // HUD render
+
+        HUDBatch = new SpriteBatch(); // For HUD on the window with static postion
+        mapHUDBatch = new SpriteBatch(); // For HUD on the map depending on circumstances
+
+        HUDRenderer = new ShapeRenderer();
+        mapHUDRenderer = new ShapeRenderer();
+
+        coinsCollected = new TextRegion("", rateX, rateY, 50, 0);
+        starsCollected = new TextRegion("",rateX, rateY, 50, 0);
 
         playerBar = Bar.HUD_BAR.apply(getPlayer(), rateX, rateY);
+
+
     }
 
     public void render(OrthographicCamera camera, SpriteBatch batch, float delta) {
@@ -80,8 +89,41 @@ public class StartMap extends GameMap {
 
         batch.end();
 
-        drawEntityHealthBar(camera);
+        drawMapHUD(camera);
         drawHUD();
+
+
+    }
+
+
+
+    public void drawMapHUD(OrthographicCamera camera) {
+        mapHUDRenderer.setProjectionMatrix(camera.combined);
+        mapHUDBatch.setProjectionMatrix(camera.combined);
+
+
+        mapHUDRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
+        for (Bar bar : getBars()) {
+            bar.fill(mapHUDRenderer, 0);
+        }
+        mapHUDRenderer.end();
+
+
+        mapHUDBatch.begin();
+
+        for (Bar bar : getBars()) {
+            bar.draw(mapHUDBatch);
+        }
+
+        for (TextRegion message : messages) {
+            if (message.getTick() > message.getDelay()) {
+                message.render(mapHUDBatch);
+            }
+
+        }
+
+        mapHUDBatch.end();
 
 
     }
@@ -91,8 +133,8 @@ public class StartMap extends GameMap {
         HUDBatch.begin();
 
 
-        playerBar.drawBar(HUDBatch, BARX, BARY1);
-        playerBar.drawBar(HUDBatch, BARX, BARY2);
+        playerBar.draw(HUDBatch, BARX, BARY1);
+        playerBar.draw(HUDBatch, BARX, BARY2);
 
 
         coinsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*29/30);
@@ -101,57 +143,85 @@ public class StartMap extends GameMap {
         HUDBatch.end();
 
 
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        HUDRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        playerBar.fillBar(shapeRenderer, 0,BARX, BARY1);
-        playerBar.fillBar(shapeRenderer, 1, BARX, BARY2);
+        playerBar.fill(HUDRenderer, 0,BARX, BARY1);
+        playerBar.fill(HUDRenderer, 1, BARX, BARY2);
 
 
-        shapeRenderer.end();
-        
-
-    }
-
-    public void drawEntityHealthBar(OrthographicCamera camera) {
-        shapeBarRenderer.setProjectionMatrix(camera.combined);
-
-        shapeBarRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
-        for (Bar bar : getBars()) {
-            bar.fillBar(shapeBarRenderer, 0);
-        }
-
-        shapeBarRenderer.end();
-
-        hudBarBatch.setProjectionMatrix(camera.combined);
-
-        hudBarBatch.begin();
-
-        for (Bar bar : getBars()) {
-            bar.drawBar(hudBarBatch);
-        }
-
-        hudBarBatch.end();
+        HUDRenderer.end();
 
 
     }
-
 
     @Override
     public void update(OrthographicCamera camera, float delta) {
+        super.update(camera, delta);
 
         coinsCollected.updateText((int)getPlayer().getCoins()+"");
         starsCollected.updateText((int)getPlayer().getStars()+"");
 
 
-        super.update(camera, delta);
+        for (TextRegion message : messages) {
+            message.update(delta);
+
+            if (message.getTick() > message.getLifespan()) {
+                message.dispose();
+                messages.remove(message);
+                if (messages.isEmpty()) break;
+
+            }
+        }
     }
 
     @Override
     public void dispose() {
         HUDBatch.dispose();
+        mapHUDBatch.dispose();
+
+        HUDRenderer.dispose();
+        mapHUDRenderer.dispose();
+
         tiledMap.dispose();
         super.dispose();
+    }
+
+
+    @Override
+    public void addHealthBar(Entity entity) {
+        Bar newBar = Bar.ENTITY_HEALTH_BAR.apply(entity, 0.075f, 0.075f);
+        bars.add(newBar);
+    }
+    @Override
+    public ArrayList<Bar> getBars() {
+        return bars;
+    }
+
+    @Override
+    public void addMessage(int id, int pid, String text,  Entity target, float width, float height, float lifespan, float delay) {
+        for (TextRegion message : messages) {
+            if (message.getPid() == pid) {
+                if (message.getId() == id) {
+                    return;
+                } else {
+                    Gdx.app.log("addMessage", "removing old message");
+                    messages.remove(message);
+                    break;
+                }
+
+            }
+        }
+        Gdx.app.log("addMessage", "adding new message");
+
+        TextRegion newMessage = new TextRegion(id, pid, text, target, 1f, 1f, width, height, lifespan, delay);
+        messages.add(newMessage);
+
+
+    }
+
+    @Override
+    public ArrayList<TextRegion> getMessages() {
+        return messages;
     }
 
     @Override

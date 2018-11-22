@@ -3,25 +3,18 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 
 import maps.GameMap;
 import snapshot.EntitySnapshot;
 import tiles.TileType;
 
-public class GuardCat extends Entity {
-
+public class GuardDoge extends Entity {
     Texture image;
-    float healPoints, visionRange, movementRadius;
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         super.create(snapshot, type, map);
 
-        image = new Texture(Gdx.files.internal("GuardCat.png"));
-
-        healPoints = snapshot.getHealPoints();
-        visionRange = snapshot.getVisionRange();
-        movementRadius = snapshot.getMovementRadius();
+        image = new Texture(Gdx.files.internal("GuardDoge.png"));
 
         map.addHealthBar(this);
 
@@ -35,9 +28,10 @@ public class GuardCat extends Entity {
         totalForceY = potentialForceY;
         potentialForceY = 0;
 
-        Entity closest = getClosest(visionRange * TileType.TILE_SIZE, EntityType.PLAYER);
+        Entity closest = getClosest(attackRange * TileType.TILE_SIZE, EntityType.PLAYER);
         if (closest != null) {
             //Gdx.app.log(getType().getId()+" can see", closest.getType().getId());
+            go();
         }
 
 
@@ -83,4 +77,5 @@ public class GuardCat extends Entity {
     public void render(SpriteBatch batch, float delta) {
         batch.draw(this.image, this.getX(), this.getY());
     }
+
 }

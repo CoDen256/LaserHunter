@@ -1,0 +1,81 @@
+package entities;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+
+public class Beam {
+    Texture image;
+    Sprite beamSprite;
+
+    Vector2 velocityVector;
+    Vector2 pos;
+
+    float velocity;
+
+    int width = 4;
+
+    float angle;
+
+    float life;
+    float lifespan;
+
+    public Beam(float x, float y, Vector2 targetDirection, float lifespan, float velocity) {
+        image = new Texture("BeamBolt2.png");
+        beamSprite = new Sprite(image);
+
+        angle = targetDirection.angle(Vector2.X);
+        this.velocity = velocity;
+        velocityVector = targetDirection;
+
+        pos = new Vector2(x, y);
+        beamSprite.setCenter(x, y);
+        beamSprite.rotate(-angle);
+        life = 0;
+        this.lifespan = lifespan;
+
+    }
+
+    public void update(float deltatime) {
+        Gdx.app.log("updating", "ohea");
+        life += deltatime;
+        velocityVector.setLength(velocity * deltatime);
+        pos = pos.add(velocityVector);
+
+        beamSprite.setCenter(pos.x, pos.y);
+
+    }
+
+    public void dispose() {
+        image.dispose();
+    }
+
+    public void render(SpriteBatch batch) {
+        beamSprite.draw(batch);
+    }
+
+    public float getX() {
+        return pos.x;
+    }
+
+    public float getY() {
+        return  pos.y;
+    }
+
+    public int getWidth() {
+        return  width;
+    }
+    public int getHeight() {
+        return  width;
+    }
+
+    public Vector2 getSize() {
+        return new Vector2(getWidth(), getHeight());
+    }
+
+    public float getLifespan() {
+        return lifespan;
+    }
+}

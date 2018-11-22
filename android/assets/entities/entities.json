@@ -19,8 +19,15 @@
 	{
 		class: snapshot.EntitySnapshot
 		type: RedLaser
-		x: 200
+		x: 500
 		y: 750
+	}
+
+	{
+		class: snapshot.EntitySnapshot
+		type: GuardDoge
+		x: 1000
+		y: 900
 	}
 
 

@@ -485,6 +485,10 @@ public abstract class Entity{
         return type;
     }
 
+    public Vector2 getPos() {
+        return pos;
+    }
+
     public float getX() {
         return pos.x;
     }
@@ -512,6 +516,9 @@ public abstract class Entity{
 
     public float getHeight() {
         return type.getHeight();
+    }
+    public Vector2 getSize() {
+        return new Vector2(getWidth(), getHeight());
     }
 
     public float getWeight() {

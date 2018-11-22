@@ -6,12 +6,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
 import buttons.ButtonType;
 import entities.Entity;
 import hud.Bar;
+import hud.BarType;
 import hud.TextRegion;
 import snapshot.EntityLoader;
 import tiles.TileType;
@@ -97,7 +99,10 @@ public abstract class GameMap {
 
                     if (type != null) {
 
-                        handleCollisions(type, layer, col, row, entity);
+                        if (entity != null) {
+                            handleCollisions(type, layer, col, row, entity);
+                        }
+
 
                         if (type.isCollidable()) {
                             return type.getId();
@@ -109,6 +114,14 @@ public abstract class GameMap {
             }
         }
         return -10;
+    }
+
+    public boolean getCollision(Vector2 pos1, Vector2 pos2, Vector2 surface1, Vector2 surface2) {
+        if (pos1.x < pos2.x + surface2.x && pos1.x + surface1.x > pos2.x
+                && pos1.y < pos2.y + surface2.y && pos1.y + surface1.y > pos2.y) {
+            return true;
+        }
+        return false;
     }
 
 

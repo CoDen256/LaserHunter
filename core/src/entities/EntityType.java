@@ -14,7 +14,8 @@ public enum EntityType {
 
     PLAYER("player", 29, 55, 49, 1000, 1000, 10.4f, 400, 300, 3,Player.class),
     GUARDCAT("GuardCat", 29, 55, 49, 500, 500, 10.4f, 400, 300, 2, GuardCat.class),
-    REDLASER("RedLaser", 21, 10, 20, 8, RedLaser.class);
+    REDLASER("RedLaser", 21, 10, 20, 8, RedLaser.class),
+    GUARDDOGE("GuardDoge", 42, 30, 30, 1000, 1000, 10.3f, 300, 400, 2, GuardDoge.class);
 
     private String id;
     private int width, height;

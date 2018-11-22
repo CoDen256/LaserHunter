@@ -39,14 +39,15 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
 
-        int w = 400; // Pixels per window
-        int h = 300; // Pixels per window
+        int w = 400;// Gdx.graphics.getWidth(); // Pixels per window
+        int h = Gdx.graphics.getHeight()*w/Gdx.graphics.getWidth();// Gdx.graphics.getHeight(); // Pixels per window
 
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, w, h);
 
         Gdx.app.log("screens", "GameScreen is created: " + Gdx.graphics.getWidth()+"x"+Gdx.graphics.getHeight());
+        Gdx.app.log("screens", "GameScreen is created: " + w+"x"+h);
 
         gameMap = new StartMap(w,h);
 

@@ -1,40 +1,42 @@
 package hud;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 import entities.Entity;
 
-public enum Bar {
-    ENTITY_HEALTH_BAR(450, 120, 360, 80, 70, 20, "HUD/hpbar.png"), // Entity Health Bar
-    HUD_BAR(142, 20, 132, 9, 5, 5,"HUD/bar4.png") // Health- and Energy- Bar for HUD
-    ;
-
+public class Bar {
 
     Texture image;
-    Entity entity;
+    private Entity entity;
 
 
     float width, height;
     float barWidth, barHeight;
     float xShift, yShift;
 
+    // BarType by default
+    public Bar(float width, float height, float barWidth, float barHeight, float xShift, float yShift, float rateX, float rateY, String path, Entity entity) {
+        this.width = width*rateX;
+        this.height = height*rateY;
 
-    // Bar by default
-    Bar(float width, float height, float barWidth, float barHeight, float xShift, float yShift, String path) {
-        this.width = width;
-        this.height = height;
+        this.barWidth = barWidth*rateX;
+        this.barHeight = barHeight*rateY;
 
-        this.barWidth = barWidth;
-        this.barHeight = barHeight;
-
-        this.xShift = xShift;
-        this.yShift = yShift;
+        this.xShift = xShift*rateX;
+        this.yShift = yShift*rateY;
 
         load(path);
-}
+
+        this.entity = entity;
+    }
+
+    public Bar(Entity entity, float rateX, float rateY, BarType defaultBar) {
+        this(defaultBar.width, defaultBar.height, defaultBar.barWidth, defaultBar.barHeight, defaultBar.xShift, defaultBar.yShift, rateX, rateY, defaultBar.path, entity);
+    }
+
+
 
     // bar:
     // 0 - HealthBar
@@ -77,20 +79,8 @@ public enum Bar {
         image = new Texture(path);
     }
 
-    public Bar apply(Entity entity, float rateX, float rateY) {
-
-        width *= rateX;
-        height *= rateY;
-
-        barWidth *= rateX;
-        barHeight *= rateY;
-
-        xShift *= rateX;
-        yShift *= rateY;
-
-        this.entity = entity;
-
-        return this;
+    public Entity getEntity() {
+        return this.entity;
     }
 
 }

@@ -10,10 +10,11 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import entities.Entity;
-import entities.Player;
 import hud.Bar;
+import hud.BarType;
 import hud.TextRegion;
 import tiles.TileType;
 
@@ -71,7 +72,7 @@ public class StartMap extends GameMap {
         coinsCollected = new TextRegion("", rateX, rateY, 50, 0);
         starsCollected = new TextRegion("",rateX, rateY, 50, 0);
 
-        playerBar = Bar.HUD_BAR.apply(getPlayer(), rateX, rateY);
+        playerBar = new Bar(getPlayer(), rateX, rateY, BarType.HUD_BAR);
 
 
     }
@@ -165,13 +166,16 @@ public class StartMap extends GameMap {
         starsCollected.updateText((int)getPlayer().getStars()+"");
 
 
-        for (TextRegion message : messages) {
+        Iterator iterator = messages.iterator();
+
+        while (iterator.hasNext()) {
+            TextRegion message = (TextRegion) iterator.next();
+
             message.update(delta);
 
             if (message.getTick() > message.getLifespan()) {
                 message.dispose();
-                messages.remove(message);
-                if (messages.isEmpty()) break;
+                iterator.remove();
 
             }
         }
@@ -185,6 +189,9 @@ public class StartMap extends GameMap {
         HUDRenderer.dispose();
         mapHUDRenderer.dispose();
 
+        bars.clear();
+        messages.clear();
+
         tiledMap.dispose();
         super.dispose();
     }
@@ -192,8 +199,10 @@ public class StartMap extends GameMap {
 
     @Override
     public void addHealthBar(Entity entity) {
-        Bar newBar = Bar.ENTITY_HEALTH_BAR.apply(entity, 0.075f, 0.075f);
+        Gdx.app.log(entity.getType().getId(), "added");
+        Bar newBar = new Bar(entity, 0.075f, 0.075f, BarType.ENTITY_HEALTH_BAR);
         bars.add(newBar);
+
     }
     @Override
     public ArrayList<Bar> getBars() {

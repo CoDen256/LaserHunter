@@ -30,7 +30,7 @@ public class GuardDoge extends Entity {
 
         Entity closest = getClosest(attackRange * TileType.TILE_SIZE, EntityType.PLAYER);
         if (closest != null) {
-            //Gdx.app.log(getType().getId()+" can see", closest.getType().getId());
+            //Gdx.app.log(getId()+" can see", closest.getId());
             go();
         }
 

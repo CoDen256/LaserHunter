@@ -15,7 +15,8 @@ public class Beam {
 
     float velocity;
 
-    int width = 4;
+    private static final int WIDTH = 4;
+    private static final int HEIGHT = 4;
 
     float angle;
 
@@ -39,7 +40,6 @@ public class Beam {
     }
 
     public void update(float deltatime) {
-        Gdx.app.log("updating", "ohea");
         life += deltatime;
         velocityVector.setLength(velocity * deltatime);
         pos = pos.add(velocityVector);
@@ -64,11 +64,15 @@ public class Beam {
         return  pos.y;
     }
 
+    public Vector2 getPos() {
+        return pos;
+    }
+
     public int getWidth() {
-        return  width;
+        return  WIDTH;
     }
     public int getHeight() {
-        return  width;
+        return  HEIGHT;
     }
 
     public Vector2 getSize() {

@@ -10,10 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
-
 import maps.GameMap;
-import screens.MainMenuScreen;
 import snapshot.EntitySnapshot;
 import tiles.TileType;
 
@@ -25,6 +22,9 @@ public class RedLaser extends Entity {
 
     ArrayList<Beam> beams;
     float tick;
+    int ntick;
+
+    int rate = 5; //beams per second;
 
     float angle;
 
@@ -37,7 +37,7 @@ public class RedLaser extends Entity {
 
         angle = 0;
 
-        tick = 0;
+        tick = ntick = 0;
 
         beams = new ArrayList<Beam>();
 
@@ -46,52 +46,25 @@ public class RedLaser extends Entity {
     public void update(float deltatime) {
 
 
-        tick += 10*deltatime;
+
+
         Entity closest = getClosest(attackRange * TileType.TILE_SIZE, EntityType.PLAYER);
 
 
         if (closest != null) {
-            //Gdx.app.log("I see you" + attackRange, closest.getType().getId());
             //flyOver(closest);
             follow(closest);
 
-            if (Math.sin(tick) > 0.99f) {
-                shootBeam(centerX(), centerY(), followingVector, 1.5f, 250, 1);
+            if (ntick % (58/rate) == 0) {
+                tick = 0;
+                shootBeam(centerX(), centerY(), followingVector, 1.5f, 250);
             }
-
-            if (Gdx.input.isKeyJustPressed(Input.Keys.TAB)) {
-                shootBeam(centerX(), centerY(), followingVector, 1.5f, 250, 1);
-            }
-
-
-            Iterator iterator = beams.iterator();
-            while (iterator.hasNext()) {
-                Beam beam = (Beam) iterator.next();
-
-
-
-                beam.update(deltatime);
-
-                int collideCode = map.getCollision(beam.getX(), beam.getY(), beam.getWidth(), beam.getWidth(), null);
-                boolean isColl = false;
-
-                if (closest != null) {
-                    isColl = map.getCollision(beam.pos, closest.getPos(), beam.getSize(), closest.getSize());
-                }
-                if (isColl) {
-                    closest.takeDamage(attackPoints);
-                }
-                if (collideCode != -10 || beam.life > beam.lifespan || isColl) {
-                    beam.dispose();
-                    iterator.remove();
-                }
-            }
-
-
-
 
         }
 
+        updateTick(deltatime);
+
+        updateBeams(deltatime);
 
         laserSprite.setPosition(getX(), getY());
 
@@ -107,7 +80,7 @@ public class RedLaser extends Entity {
     }
 
     public void flyOver(Entity entity) {
-        pos.y = entity.getY() + 150;
+        pos.y = entity.getY() ;
     }
 
     public void follow(Entity entity) {
@@ -121,10 +94,44 @@ public class RedLaser extends Entity {
         laserSprite.rotate(angle);
     }
 
-    public void shootBeam(float x, float y, Vector2 target, float lifespan, float velocity, int amount) {
-        for (int i = 0; i < amount; i++) {
-            beams.add(new Beam(x, y, target, lifespan, velocity));
+    public void updateTick(float deltatime) {
+        tick += deltatime;
+
+
+        if ((int)(tick - deltatime) == (int) tick) {
+            ntick++;
+        } else {
+            ntick = 0;
         }
+
+    }
+
+    public void updateBeams(float deltatime) {
+        Iterator iterator = beams.iterator();
+        while (iterator.hasNext()) {
+            Beam beam = (Beam) iterator.next();
+
+            beam.update(deltatime);
+
+
+            int mapCollideCode = map.getCollision(beam.getX(), beam.getY(), beam.getWidth(), beam.getHeight(), null);
+            Entity adjacentEntity = map.getCollisionWithEntities(beam.getPos(), beam.getSize(), this);
+
+            if (adjacentEntity != null) {
+                adjacentEntity.takeDamage(attackPoints);
+            }
+
+            if (mapCollideCode != map.NO_COLLISION || beam.life > beam.lifespan || adjacentEntity != null) {
+                beam.dispose();
+                iterator.remove();
+            }
+        }
+    }
+
+    public void shootBeam(float x, float y, Vector2 target, float lifespan, float velocity) {
+
+        beams.add(new Beam(x, y, target, lifespan, velocity));
+
 
     }
 }

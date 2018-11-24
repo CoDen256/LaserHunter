@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import buttons.ButtonType;
 import entities.Entity;
 import hud.Bar;
-import hud.BarType;
+import hud.Log;
 import hud.TextRegion;
 import snapshot.EntityLoader;
 import tiles.TileType;
@@ -25,6 +25,8 @@ public abstract class GameMap {
 
     protected TiledMap tiledMap;
 
+    public static final int NO_COLLISION = -10;
+    public static final int BOUNDARY_COLLISION = -1;
 
     public GameMap() {
 
@@ -89,7 +91,7 @@ public abstract class GameMap {
         float shiftUp = height*0.08f;
 
         if (x + shiftLeft < 0 || y < 0 || x - shiftRight + width   > getPixelWidth() || y - shiftUp + height > getPixelHeight()) {
-            return -1;
+            return BOUNDARY_COLLISION;
         }
         for (int row = (int)(y / TileType.TILE_SIZE); row < Math.ceil((y - shiftUp + height) / TileType.TILE_SIZE); row++) {
             for (int col = (int) ((x + shiftLeft) / TileType.TILE_SIZE); col < Math.ceil(((x - shiftRight) + width) / TileType.TILE_SIZE); col++) {
@@ -113,15 +115,29 @@ public abstract class GameMap {
                 }
             }
         }
-        return -10;
+        return NO_COLLISION;
     }
 
-    public boolean getCollision(Vector2 pos1, Vector2 pos2, Vector2 surface1, Vector2 surface2) {
-        if (pos1.x < pos2.x + surface2.x && pos1.x + surface1.x > pos2.x
-                && pos1.y < pos2.y + surface2.y && pos1.y + surface1.y > pos2.y) {
+    public boolean getCollision(Vector2 pos1, Vector2 pos2, Vector2 size1, Vector2 size2) {
+        if (pos1.x < pos2.x + size2.x && pos1.x + size1.x > pos2.x
+                && pos1.y < pos2.y + size2.y && pos1.y + size1.y > pos2.y) {
             return true;
         }
         return false;
+    }
+
+    public Entity getCollisionWithEntities(Vector2 pos, Vector2 size, Entity exception) {
+
+        for (Entity entity : getEntities()) {
+            boolean collision = getCollision(pos, entity.getPos(), size, entity.getSize());
+            if (collision == true) {
+                if (entity != exception) {
+                    return entity;
+                }
+
+            }
+        }
+        return null;
     }
 
 
@@ -150,7 +166,7 @@ public abstract class GameMap {
         }
         if (tile.isDamageDealer()) {
             if (tile.getDamage() > 0) {
-                if (entity.getType().getId() == "player") {
+                if (entity.getId() == "player") {
                     addMessage(0,0,"Ouch", entity, 50, 25, 2, 0);
                 }
 
@@ -162,7 +178,7 @@ public abstract class GameMap {
 
         if (tile.isCollectible()) {
 
-            Gdx.app.log(tile.getName(), "collecting");
+            getLog().add(tile.getName() + " collected");
 
             if (tile.getName() == "Star") {
                 entity.takeStar();
@@ -234,4 +250,5 @@ public abstract class GameMap {
 
     public abstract int getLayers(); // number of Map layers
 
+    public abstract Log getLog();
 }

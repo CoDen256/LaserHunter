@@ -1,6 +1,7 @@
 package entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -17,6 +18,8 @@ public abstract class Entity{
     // Entity properties
     protected Vector2 pos;
     protected EntityType type;
+
+    protected String id;
 
     protected float health;
     protected float maxHealth;
@@ -106,6 +109,7 @@ public abstract class Entity{
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         pos = new Vector2(snapshot.getX(), snapshot.getY());
 
+        id = type.getId();
 
         health = type.getHealth();
         maxHealth = type.getHealth();
@@ -270,7 +274,7 @@ public abstract class Entity{
     // X-Axis Handlers
     public void checkHorizontalCollision(float newX) {
         int collideCode = map.getCollision(newX, pos.y, (int) getWidth(), (int) getHeight(), this);
-        if (collideCode == -10) {
+        if (collideCode == map.NO_COLLISION) {
             this.pos.x = newX;
         } else{
             velX = 0;
@@ -302,7 +306,7 @@ public abstract class Entity{
     public void checkVerticalCollision(float newY) {
         int collideCode = map.getCollision(pos.x, newY, (int) getWidth(), (int) getHeight(), this);
 
-        if (collideCode != -10) {
+        if (collideCode != map.NO_COLLISION) {
 
             TileType adjacentTile = collideCode != -1? TileType.getTileTypeById(collideCode) : null;
 
@@ -390,7 +394,7 @@ public abstract class Entity{
     // Combat Handlers
     public void attack(float amount, Entity entity) {
         if (entity != null) {
-            Gdx.app.log("Attacking "+amount, entity.getType().getId());
+            map.getLog().add("Give to "+entity.getId()+" "+(int)amount+" damage",2);
             entity.takeDamage(amount);
 
         }
@@ -410,12 +414,12 @@ public abstract class Entity{
     public Entity getClosest(float range, EntityType priority) {
         Entity closest = null;
         for (Entity entity : map.getEntities()) {
-            if (entity.getType().getId() != this.getType().getId()) {
+            if (entity.getId() != this.getId()) {
                 float r = getRadius(entity.getX(), entity.getY(), this.getX(), this.getY());
                 if (r < range) {
                     if (closest != null) {
                         if (priority != null) {
-                            if (closest.getType().getId() == priority.getId()) {
+                            if (closest.getId() == priority.getId()) {
                                 return closest;
                             }
                         }
@@ -453,7 +457,7 @@ public abstract class Entity{
         float newEnergy = energy - amount;
 
         if (newEnergy < 0) {
-            Gdx.app.log("energy", "not enough energy to perform an action ");
+            map.getLog().add("Not enough energy to perform the action", 2);
             return false;
         }
 
@@ -483,6 +487,10 @@ public abstract class Entity{
 
     public EntityType getType() {
         return type;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Vector2 getPos() {
@@ -517,6 +525,7 @@ public abstract class Entity{
     public float getHeight() {
         return type.getHeight();
     }
+
     public Vector2 getSize() {
         return new Vector2(getWidth(), getHeight());
     }

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import entities.Entity;
 import hud.Bar;
 import hud.BarType;
+import hud.Log;
 import hud.TextRegion;
 import tiles.TileType;
 
@@ -30,6 +31,8 @@ public class StartMap extends GameMap {
     TextRegion starsCollected;
 
     Bar playerBar;
+
+    Log log;
 
     static ArrayList<TextRegion> messages = new ArrayList<TextRegion>();
     static ArrayList<Bar> bars =  new ArrayList<Bar>();
@@ -74,6 +77,8 @@ public class StartMap extends GameMap {
 
         playerBar = new Bar(getPlayer(), rateX, rateY, BarType.HUD_BAR);
 
+        log = new Log(5, Gdx.graphics.getHeight() * 5.5f/7, 5, 150, 1f*rateX, 1f*rateY);
+
 
     }
 
@@ -109,7 +114,7 @@ public class StartMap extends GameMap {
             bar.fill(mapHUDRenderer, 0);
         }
 
-        mapHUDRenderer.line(getPlayer().centerX(), getPlayer().centerY(), entities.get(2).centerX(), entities.get(2).centerY());
+        //mapHUDRenderer.line(getPlayer().centerX(), getPlayer().centerY(), entities.get(2).centerX(), entities.get(2).centerY());
 
         mapHUDRenderer.end();
 
@@ -140,6 +145,7 @@ public class StartMap extends GameMap {
         playerBar.draw(HUDBatch, BARX, BARY1);
         playerBar.draw(HUDBatch, BARX, BARY2);
 
+        log.render(HUDBatch);
 
         coinsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*29/30);
         starsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*27/30);
@@ -165,6 +171,7 @@ public class StartMap extends GameMap {
         coinsCollected.updateText((int)getPlayer().getCoins()+"");
         starsCollected.updateText((int)getPlayer().getStars()+"");
 
+        log.update(delta);
 
         Iterator iterator = messages.iterator();
 
@@ -183,6 +190,7 @@ public class StartMap extends GameMap {
 
     @Override
     public void dispose() {
+
         HUDBatch.dispose();
         mapHUDBatch.dispose();
 
@@ -199,7 +207,7 @@ public class StartMap extends GameMap {
 
     @Override
     public void addHealthBar(Entity entity) {
-        Gdx.app.log(entity.getType().getId(), "added");
+        Gdx.app.log("HealthBar added", entity.getId());
         Bar newBar = new Bar(entity, 0.075f, 0.075f, BarType.ENTITY_HEALTH_BAR);
         bars.add(newBar);
 
@@ -223,7 +231,7 @@ public class StartMap extends GameMap {
 
             }
         }
-        Gdx.app.log("addMessage", "adding new message");
+        //Gdx.app.log("addMessage", "adding new message");
 
         TextRegion newMessage = new TextRegion(id, pid, text, target, 1f, 1f, width, height, lifespan, delay);
         messages.add(newMessage);
@@ -248,6 +256,11 @@ public class StartMap extends GameMap {
         }
         return null;
 
+    }
+
+    @Override
+    public Log getLog() {
+        return log;
     }
 
     @Override

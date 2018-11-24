@@ -31,7 +31,7 @@ public class TextRegion{
     public TextRegion(int id, int pid, String text, Entity target, float textScaleX, float textScaleY, float width, float height, float lifespan, float delay) {
         this.id = id;
         this.pid = pid;
-        this.text = " " + text;
+        this.text = text;
         this.target = target;
 
         this.width = width;
@@ -49,7 +49,12 @@ public class TextRegion{
     }
 
     public void render(SpriteBatch batch, float x, float y) {
-        font.draw(batch, text, x, y+height, width, 10, true);
+        if (target == null) {
+            font.draw(batch, text, x, y, width, 10, true);
+        } else {
+            font.draw(batch, text, x, y+height, width, 10, true);
+        }
+
     }
 
     //For HudBatch
@@ -62,6 +67,7 @@ public class TextRegion{
 
         font.draw(batch, this.text, x, y+shiftY, this.width, 10, true);
     }
+
 
     // For MapBatch
     public void render(SpriteBatch batch) {

@@ -15,7 +15,6 @@ import snapshot.EntitySnapshot;
 import tiles.TileType;
 
 public class RedLaser extends Entity {
-    Texture image;
     Sprite laserSprite;
 
     Vector2 followingVector;
@@ -24,22 +23,36 @@ public class RedLaser extends Entity {
     float tick;
     int ntick;
 
-    int rate = 5; //beams per second;
+    int rate; //beams per second;
+    float beamLifeSpan;
+    float beamVelocity;
+
+    int staticPostion;
 
     float angle;
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
 
         super.create(snapshot, type, map);
-        image = new Texture("RedLaser.png");
+
+        rate = snapshot.getBeamRate();
+        beamLifeSpan = snapshot.getBeamLifeSpan();
+        beamVelocity = snapshot.getBeamVelocity();
+
+        staticPostion = snapshot.isStaticPosition();
         laserSprite = new Sprite(image);
         laserSprite.setPosition(getX(), getY());
 
-        angle = 0;
+        angle = snapshot.getInitialAngle();
 
         tick = ntick = 0;
 
         beams = new ArrayList<Beam>();
+
+        if (staticPostion == 0) {
+            followingVector = Vector2.X.rotate(angle);
+            rotate(angle);
+        }
 
     }
 
@@ -53,11 +66,17 @@ public class RedLaser extends Entity {
 
         if (closest != null) {
             //flyOver(closest);
-            follow(closest);
+            if (staticPostion != 0) {
+                follow(closest);
+                if (staticPostion == 2) {
+                    flyOver(closest);
+                }
+            }
+
 
             if (ntick % (58/rate) == 0) {
                 tick = 0;
-                shootBeam(centerX(), centerY(), followingVector, 1.5f, 250);
+                shootBeam(centerX(), centerY(), followingVector, beamLifeSpan, beamVelocity);
             }
 
         }
@@ -80,13 +99,13 @@ public class RedLaser extends Entity {
     }
 
     public void flyOver(Entity entity) {
-        pos.y = entity.getY() ;
+        pos.y = entity.getY() +150;
     }
 
     public void follow(Entity entity) {
         followingVector = new Vector2(-centerX() + entity.centerX(), -centerY() + entity.centerY());
         float newAngle = followingVector.angle(Vector2.X);
-        rotate(angle - newAngle);
+        rotate(180+(angle - newAngle));
         angle = newAngle;
     }
 

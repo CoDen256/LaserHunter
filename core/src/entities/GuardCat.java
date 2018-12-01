@@ -11,13 +11,10 @@ import tiles.TileType;
 
 public class GuardCat extends Entity {
 
-    Texture image;
     float healPoints, visionRange, movementRadius;
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         super.create(snapshot, type, map);
-
-        image = new Texture(Gdx.files.internal("GuardCat.png"));
 
         healPoints = snapshot.getHealPoints();
         visionRange = snapshot.getVisionRange();
@@ -37,8 +34,7 @@ public class GuardCat extends Entity {
 
         Entity closest = getClosest(visionRange * TileType.TILE_SIZE, EntityType.PLAYER);
         if (closest != null) {
-            //Gdx.app.log(getId()+" can see", closest.getId());
-            map.getLog().add("Nu hello");
+            map.getLog().add(this.getId()+" has spotted " + closest.getId(),2 , true);
         }
 
 
@@ -50,33 +46,24 @@ public class GuardCat extends Entity {
 
 
         takeDamage(-10*deltatime);
+        takeEnergy(-100*deltatime);
 
-        combatUpdate(deltatime); // Combat handling
+        combatUpdate(deltatime, closest); // Combat handling
 
         super.update(deltatime);
 
 
     }
 
-    public void go() {
-        if (grounded || jumpTick == 1) {
-            moveToRight(SPEED_STEP/3);
-        }
 
-
-        if (xCollision && grounded) {
-            jump();
-            xCollision = false;
-        }
-    }
-
-    public void combatUpdate(float deltatime) {
+    public void combatUpdate(float deltatime, Entity closest) {
         if (isInDefence) {
-
+            setDefence(false);
         }
 
         if (isAttacking) {
-
+            attack(attackPoints, closest);
+            setAttacking(false);
         }
     }
 

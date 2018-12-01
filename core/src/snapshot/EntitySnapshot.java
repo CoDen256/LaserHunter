@@ -8,6 +8,13 @@ public class EntitySnapshot {
     public float x,y;
     public float healPoints, visionRange;
     public float movementRadius;
+
+    public int beamRate;
+    public float beamLifeSpan, beamVelocity;
+
+    int staticPosition;
+    float initialAngle;
+
     public HashMap<String, String> data;
 
     public EntitySnapshot() {
@@ -57,6 +64,26 @@ public class EntitySnapshot {
 
     public float getHealPoints() {
         return healPoints;
+    }
+
+    public int getBeamRate() {
+        return beamRate;
+    }
+
+    public float getBeamLifeSpan() {
+        return beamLifeSpan;
+    }
+
+    public float getBeamVelocity() {
+        return beamVelocity;
+    }
+
+    public float getInitialAngle() {
+        return initialAngle;
+    }
+
+    public int isStaticPosition() {
+        return staticPosition;
     }
 
     public void putFloat(String key, float value) {

@@ -78,7 +78,7 @@ public class TextRegion{
         float shiftX = -width / 5;
         float shiftY = this.height;
 
-        font.draw(batch, this.text, x+shiftX, y + shiftY, this.width, 10, true);
+        font.draw(batch, " "+this.text, x+shiftX, y + shiftY, this.width, 10, true);
     }
 
     public void update(float delta) {

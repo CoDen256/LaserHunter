@@ -24,7 +24,7 @@ public class Beam {
     float lifespan;
 
     public Beam(float x, float y, Vector2 targetDirection, float lifespan, float velocity) {
-        image = new Texture("BeamBolt2.png");
+        image = new Texture("entities/RedLaser/beam.png");
         beamSprite = new Sprite(image);
 
         angle = targetDirection.angle(Vector2.X);
@@ -33,7 +33,7 @@ public class Beam {
 
         pos = new Vector2(x, y);
         beamSprite.setCenter(x, y);
-        beamSprite.rotate(-angle);
+        beamSprite.rotate(180-angle);
         life = 0;
         this.lifespan = lifespan;
 

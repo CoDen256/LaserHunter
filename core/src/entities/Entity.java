@@ -2,6 +2,7 @@ package entities;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -15,11 +16,15 @@ public abstract class Entity{
 
     protected GameMap map;
 
+
+
     // Entity properties
     protected Vector2 pos;
     protected EntityType type;
 
     protected String id;
+
+    protected Texture image;
 
     protected float health;
     protected float maxHealth;
@@ -30,6 +35,7 @@ public abstract class Entity{
     protected float attackPoints;
     protected float defendPoints;
     protected float attackRange;
+    protected float cooldown;
 
     protected boolean isInDefence;
     protected boolean isAttacking;
@@ -109,6 +115,8 @@ public abstract class Entity{
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         pos = new Vector2(snapshot.getX(), snapshot.getY());
 
+        image = new Texture(Gdx.files.internal("entities/"+type.getPath()+"/initial.png"));
+
         id = type.getId();
 
         health = type.getHealth();
@@ -121,6 +129,7 @@ public abstract class Entity{
         attackPoints = type.getAttackPoints();
         defendPoints = type.getDefendPoints();
         attackRange = type.getAttackRange();
+        cooldown = type.getCooldown();
 
         this.type = type;
         this.map = map;
@@ -313,6 +322,7 @@ public abstract class Entity{
             if (velY < 0) {
                 pos.y = (float) Math.floor(pos.y);
                 grounded = true;
+                velX = jumpTick != 0? 0.5f*velX : velX;
                 jumpTick = 0; }
 
 
@@ -394,7 +404,7 @@ public abstract class Entity{
     // Combat Handlers
     public void attack(float amount, Entity entity) {
         if (entity != null) {
-            map.getLog().add("Give to "+entity.getId()+" "+(int)amount+" damage",2);
+            map.getLog().add("Give to "+entity.getId()+" "+(int)amount+" damage",2, false);
             entity.takeDamage(amount);
 
         }
@@ -414,7 +424,7 @@ public abstract class Entity{
     public Entity getClosest(float range, EntityType priority) {
         Entity closest = null;
         for (Entity entity : map.getEntities()) {
-            if (entity.getId() != this.getId()) {
+            if (entity.getId() != this.getId() && !entity.getId().contains("Laser")) {
                 float r = getRadius(entity.getX(), entity.getY(), this.getX(), this.getY());
                 if (r < range) {
                     if (closest != null) {
@@ -448,8 +458,15 @@ public abstract class Entity{
 
 
     public void takeDamage(float amount) {
+        if (isInDefence) {
+            amount = amount/defendPoints;
+        }
         health -= amount;
-        if (health < 0) health = 0;
+        if (health < 0){
+            health = 0;
+            map.getLog().add(this.getId()+" has died :c", 1, true );
+        }
+
         if (health > maxHealth) health = maxHealth;
     }
 
@@ -457,7 +474,10 @@ public abstract class Entity{
         float newEnergy = energy - amount;
 
         if (newEnergy < 0) {
-            map.getLog().add("Not enough energy to perform the action", 2);
+            if (getId() == "player") {
+                map.getLog().add("Not enough energy to perform the action", 2, true);
+            }
+
             return false;
         }
 

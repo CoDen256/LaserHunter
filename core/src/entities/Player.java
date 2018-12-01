@@ -14,8 +14,6 @@ import tiles.TileType;
 
 public class Player extends Entity {
 
-    Texture image;
-
     protected int movingDirection;
 
     protected static final int xLow = Gdx.graphics.getWidth()/2;
@@ -30,8 +28,6 @@ public class Player extends Entity {
 
 
         // spawnRadius = snapshot.getFloat("spawnRadius", 50);
-
-        image = new Texture(Gdx.files.internal("cat.png"));
 
         jumpTick = 0;
         movingDirection = 0;
@@ -62,6 +58,7 @@ public class Player extends Entity {
         potentialForceY = 0;
 
         Entity closestAttack = getClosest(this.attackRange*TileType.TILE_SIZE, null);
+
 
 
         updateInput(); // Handling all the input

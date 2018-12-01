@@ -178,7 +178,7 @@ public abstract class GameMap {
 
         if (tile.isCollectible()) {
 
-            getLog().add(tile.getName() + " collected");
+            getLog().add(entity.getId() + " has collected "+tile.getName(), 2, false);
 
             if (tile.getName() == "Star") {
                 entity.takeStar();

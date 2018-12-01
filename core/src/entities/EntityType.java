@@ -12,26 +12,31 @@ import snapshot.EntitySnapshot;
 
 public enum EntityType {
 
-    PLAYER("player", 29, 55, 49, 1000, 1000, 10.4f, 400, 300, 3,Player.class),
-    GUARDCAT("GuardCat", 29, 55, 49, 500, 500, 10.4f, 400, 300, 2, GuardCat.class),
-    REDLASER("RedLaser", 21, 10, 20, 8, RedLaser.class),
-    GUARDDOGE("GuardDoge", 42, 30, 30, 1000, 1000, 10.3f, 300, 400, 2, GuardDoge.class);
+    PLAYER("player", 29, 55, 49, 1000, 1000, 10.4f, 400, 3, 3, 0,Player.class, "player"),
+    GUARDCAT("GuardCat", 29, 55, 49, 500, 500, 10.4f, 400, 4, 2, 200,GuardCat.class, "GuardCat"),
+    REDLASER("RedLaser", 21, 10, 30, 10, RedLaser.class, "RedLaser"),
+    GUARDDOGE("GuardDoge", 42, 30, 49, 1000, 1000, 10.3f, 100, 4, 1, 0.4f, GuardDoge.class, "GuardDoge");
 
-    private String id;
+    private String id,path;
     private int width, height;
     private float weight;
     private float health, energy;
     private float density;
     private float attackPoints, defendPoints;
     private float attackRange;
+    private float cooldown;
 
     private Class loaderClass;
 
-    EntityType(String id, int width, int height, float weight, float health, float energy, float density, float attackPoints, float defendPoints, float attackRange,Class loaderClass) {
+    EntityType(String id, int width, int height, float weight, float health, float energy, float density,
+               float attackPoints, float defendPoints, float attackRange, float cooldown,
+               Class loaderClass, String path) {
         this.id = id;
         this.width = width;
         this.height = height;
         this.weight = weight;
+
+        this.path = path;
 
         this.health = health;
         this.energy = energy;
@@ -41,13 +46,17 @@ public enum EntityType {
         this.defendPoints = defendPoints;
         this.attackRange = attackRange;
 
+        this.cooldown = cooldown;
+
         this.loaderClass = loaderClass;
     }
 
-    EntityType(String id, int width, int height, float attackPoints, float attackRange,Class loaderClass) {
+    EntityType(String id, int width, int height, float attackPoints, float attackRange,Class loaderClass, String path) {
         this.id = id;
         this.width = width;
         this.height = height;
+
+        this.path = path;
 
         this.attackPoints = attackPoints;
         this.attackRange = attackRange;
@@ -95,6 +104,14 @@ public enum EntityType {
 
     public float getAttackRange() {
         return attackRange;
+    }
+
+    public float getCooldown() {
+        return cooldown;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public static Entity createEntityBySnapshot(EntitySnapshot snapshot, GameMap map) {

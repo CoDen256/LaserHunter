@@ -3,6 +3,7 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 import maps.GameMap;
@@ -12,6 +13,7 @@ import tiles.TileType;
 public class GuardCat extends Entity {
 
     float healPoints, visionRange, movementRadius;
+    float cd;
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         super.create(snapshot, type, map);
@@ -20,6 +22,7 @@ public class GuardCat extends Entity {
         visionRange = snapshot.getVisionRange();
         movementRadius = snapshot.getMovementRadius();
 
+        cd = 0;
         map.addHealthBar(this);
 
     }
@@ -34,8 +37,17 @@ public class GuardCat extends Entity {
 
         Entity closest = getClosest(visionRange * TileType.TILE_SIZE, EntityType.PLAYER);
         if (closest != null) {
-            map.getLog().add(this.getId()+" has spotted " + closest.getId(),2 , true);
+            if (Math.abs(getX() - closest.getX()) > 4 * TileType.TILE_SIZE) {
+                map.addMessage(0, gameId, "Come here my little boy",this,125,15,2,0);
+            }
+
+            if (getRadius(getX(), getY(), closest.getX(), closest.getY()) < 30 && cd == 0) {
+                closest.takeDamage(-healPoints);
+                cd = cooldown;
+            }
         }
+
+        cd = cd < 0 ? 0 : cd - deltatime;
 
 
 

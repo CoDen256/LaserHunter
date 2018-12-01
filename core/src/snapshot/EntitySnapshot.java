@@ -5,6 +5,7 @@ import java.util.HashMap;
 public class EntitySnapshot {
 
     public String type;
+    public int id;
     public float x,y;
     public float healPoints, visionRange;
     public float movementRadius;
@@ -84,6 +85,10 @@ public class EntitySnapshot {
 
     public int isStaticPosition() {
         return staticPosition;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public void putFloat(String key, float value) {

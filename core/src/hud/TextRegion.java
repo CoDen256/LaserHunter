@@ -57,17 +57,6 @@ public class TextRegion{
 
     }
 
-    //For HudBatch
-    public void render(SpriteBatch batch, OrthographicCamera camera, float resX, float resY) {
-
-        float x = getRelative(target.getX(), camera.position.x,Gdx.graphics.getWidth(), resX);
-        float y = getRelative(target.getY()+target.getHeight(), camera.position.y, Gdx.graphics.getHeight(),resY);
-
-        float shiftY = this.height;
-
-        font.draw(batch, this.text, x, y+shiftY, this.width, 10, true);
-    }
-
 
     // For MapBatch
     public void render(SpriteBatch batch) {

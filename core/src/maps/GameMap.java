@@ -166,9 +166,6 @@ public abstract class GameMap {
         }
         if (tile.isDamageDealer()) {
             if (tile.getDamage() > 0) {
-                if (entity.getId() == "player") {
-                    addMessage(0,0,"Ouch", entity, 50, 25, 2, 0);
-                }
 
 
             }

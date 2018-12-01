@@ -23,6 +23,7 @@ public abstract class Entity{
     protected EntityType type;
 
     protected String id;
+    protected int gameId;
 
     protected Texture image;
 
@@ -118,6 +119,7 @@ public abstract class Entity{
         image = new Texture(Gdx.files.internal("entities/"+type.getPath()+"/initial.png"));
 
         id = type.getId();
+        gameId = snapshot.getId();
 
         health = type.getHealth();
         maxHealth = type.getHealth();

@@ -233,7 +233,7 @@ public class StartMap extends GameMap {
         }
         //Gdx.app.log("addMessage", "adding new message");
 
-        TextRegion newMessage = new TextRegion(id, pid, text, target, 1f, 1f, width, height, lifespan, delay);
+        TextRegion newMessage = new TextRegion(id, pid, text, target, 0.65f, 0.65f, width, height, lifespan, delay);
         messages.add(newMessage);
 
 

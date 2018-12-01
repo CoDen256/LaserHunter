@@ -15,6 +15,7 @@ public enum EntityType {
     PLAYER("player", 29, 55, 49, 1000, 1000, 10.4f, 400, 3, 3, 0,Player.class, "player"),
     GUARDCAT("GuardCat", 29, 55, 49, 500, 500, 10.4f, 400, 4, 2, 200,GuardCat.class, "GuardCat"),
     REDLASER("RedLaser", 21, 10, 30, 10, RedLaser.class, "RedLaser"),
+    GREENLASER("GreenLaser", 21, 10, -30, 10, RedLaser.class, "GreenLaser"),
     GUARDDOGE("GuardDoge", 42, 30, 49, 1000, 1000, 10.3f, 100, 4, 1, 0.4f, GuardDoge.class, "GuardDoge");
 
     private String id,path;

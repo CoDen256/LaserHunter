@@ -83,4 +83,8 @@ public class Bar {
         return this.entity;
     }
 
+    public float getWidth() {
+        return width;
+    }
+
 }

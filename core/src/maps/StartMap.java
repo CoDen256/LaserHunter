@@ -2,6 +2,7 @@ package maps;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTile;
@@ -29,6 +30,7 @@ public class StartMap extends GameMap {
 
     TextRegion coinsCollected;
     TextRegion starsCollected;
+    Texture life;
 
     Bar playerBar;
 
@@ -76,7 +78,7 @@ public class StartMap extends GameMap {
         starsCollected = new TextRegion("",rateX, rateY, 50, 0);
 
         playerBar = new Bar(getPlayer(), rateX, rateY, BarType.HUD_BAR);
-
+        life = new Texture("entities/player/life.png");
         log = new Log(5, Gdx.graphics.getHeight() * 5.5f/7, 5, 150, 1f*rateX, 1f*rateY);
 
 
@@ -149,6 +151,10 @@ public class StartMap extends GameMap {
 
         coinsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*29/30);
         starsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*27/30);
+
+        for (int i = 0; i < getPlayer().getLifes(); i++) {
+            HUDBatch.draw(life, playerBar.getWidth() + BARX + 5 + i * 10, BARY1-1, 16*rateX, 16*rateY);
+        }
 
         HUDBatch.end();
 

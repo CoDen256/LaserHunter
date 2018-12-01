@@ -23,8 +23,8 @@ public class Beam {
     float life;
     float lifespan;
 
-    public Beam(float x, float y, Vector2 targetDirection, float lifespan, float velocity) {
-        image = new Texture("entities/RedLaser/beam.png");
+    public Beam(float x, float y, Vector2 targetDirection, float lifespan, float velocity, String path) {
+        image = new Texture("entities/"+path+"/beam.png");
         beamSprite = new Sprite(image);
 
         angle = targetDirection.angle(Vector2.X);

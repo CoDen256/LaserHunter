@@ -59,6 +59,7 @@ public enum TileType {
     Star(36,"Star", 0, 0, 0),
     HealthPotion(37, "HealthPotion", 0, -500, 0),
     EnergyPotion(38, "EnergyPotion", 0, 0, -500),
+    Life(39, "Life", 0, 0, 0)
 
     ;
 

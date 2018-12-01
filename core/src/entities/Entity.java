@@ -63,6 +63,7 @@ public abstract class Entity{
 
     // Player attributes
 
+    protected int lifes;
     protected int starCollected = 0;
     protected int coins = 0;
 
@@ -458,6 +459,13 @@ public abstract class Entity{
         starCollected ++;
     }
 
+    public void takeLife() {
+        if (lifes <= 8) {
+            lifes++;
+        }
+
+    }
+
 
     public void takeDamage(float amount) {
         if (isInDefence) {
@@ -466,7 +474,8 @@ public abstract class Entity{
         health -= amount;
         if (health < 0){
             health = 0;
-            map.getLog().add(this.getId()+" has died :c", 1, true );
+            lifes--;
+            map.getLog().add(this.getId()+" has died :c", 1, false );
         }
 
         if (health > maxHealth) health = maxHealth;
@@ -578,6 +587,10 @@ public abstract class Entity{
 
     public float getStars() {
         return starCollected;
+    }
+
+    public int getLifes() {
+        return lifes;
     }
 
     public static int getJumpVelocity() {

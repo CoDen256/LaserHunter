@@ -4,6 +4,7 @@
 	type: player
 	x: 3250
 	y: 650
+	lifes:9
 	id:0
 
 }
@@ -78,6 +79,18 @@
 		staticPosition: 2
 		initialAngle:0
 		id:6
+	}
+	{
+		class: snapshot.EntitySnapshot
+		type: GreenLaser
+		x: 5150
+		y: 600
+		beamRate: 7
+		beamLifeSpan: 2.0
+		beamVelocity: 250
+		staticPosition: 1
+		initialAngle:0
+		id:7
 	}
 
 

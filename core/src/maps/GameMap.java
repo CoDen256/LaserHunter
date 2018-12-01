@@ -179,7 +179,13 @@ public abstract class GameMap {
 
             if (tile.getName() == "Star") {
                 entity.takeStar();
-            }else {
+            } else if (tile.getName() == "Life") {
+                if (entity.getId() == "player") {
+                    entity.takeLife();
+                } else {
+                    return;
+                }
+            } else {
                 entity.takeCoin(tile.getCoins());
                 entity.takeDamage(tile.getHealth());
                 entity.takeEnergy(tile.getEnergy());

@@ -149,7 +149,7 @@ public class RedLaser extends Entity {
 
     public void shootBeam(float x, float y, Vector2 target, float lifespan, float velocity) {
 
-        beams.add(new Beam(x, y, target, lifespan, velocity));
+        beams.add(new Beam(x, y, target, lifespan, velocity, getType().getPath()));
 
 
     }

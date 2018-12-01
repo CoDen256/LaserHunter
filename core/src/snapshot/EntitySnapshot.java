@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class EntitySnapshot {
 
     public String type;
-    public int id;
+    public int id, lifes;
     public float x,y;
     public float healPoints, visionRange;
     public float movementRadius;
@@ -89,6 +89,10 @@ public class EntitySnapshot {
 
     public int getId() {
         return id;
+    }
+
+    public int getLifes() {
+        return lifes;
     }
 
     public void putFloat(String key, float value) {

@@ -42,6 +42,7 @@ public abstract class Entity{
     protected boolean isAttacking;
 
     protected int jumpTick;
+    protected boolean disposed = false;
 
 
 
@@ -63,7 +64,6 @@ public abstract class Entity{
 
     // Player attributes
 
-    protected int lifes;
     protected int starCollected = 0;
     protected int coins = 0;
 
@@ -459,12 +459,6 @@ public abstract class Entity{
         starCollected ++;
     }
 
-    public void takeLife() {
-        if (lifes <= 8) {
-            lifes++;
-        }
-
-    }
 
 
     public void takeDamage(float amount) {
@@ -474,8 +468,7 @@ public abstract class Entity{
         health -= amount;
         if (health < 0){
             health = 0;
-            lifes--;
-            map.getLog().add(this.getId()+" has died :c", 1, false );
+            dispose();
         }
 
         if (health > maxHealth) health = maxHealth;
@@ -496,6 +489,15 @@ public abstract class Entity{
         else energy = newEnergy;
 
         return true;
+    }
+
+    public void dispose() {
+        image.dispose();
+        disposed = true;
+    }
+
+    public boolean isDisposed() {
+        return disposed;
     }
 
     // Setters
@@ -589,9 +591,6 @@ public abstract class Entity{
         return starCollected;
     }
 
-    public int getLifes() {
-        return lifes;
-    }
 
     public static int getJumpVelocity() {
         return JUMP_VELOCITY;

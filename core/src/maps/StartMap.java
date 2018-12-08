@@ -1,5 +1,6 @@
 package maps;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,6 +13,8 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.xml.soap.Text;
 
 import entities.Entity;
 import hud.Bar;
@@ -30,7 +33,7 @@ public class StartMap extends GameMap {
 
     TextRegion coinsCollected;
     TextRegion starsCollected;
-    Texture life;
+    Texture life,coin,star;
 
     Bar playerBar;
 
@@ -79,8 +82,10 @@ public class StartMap extends GameMap {
 
         playerBar = new Bar(getPlayer(), rateX, rateY, BarType.HUD_BAR);
         life = new Texture("entities/player/life.png");
-        log = new Log(5, Gdx.graphics.getHeight() * 5.5f/7, 5, 150, 1f*rateX, 1f*rateY);
+        log = new Log(5*rateX, Gdx.graphics.getHeight() * 5.5f/7, 5, 150*rateX, 1f*rateX, 1f*rateY);
 
+        coin = new Texture("coin.png");
+        star = new Texture("star.png");
 
     }
 
@@ -112,9 +117,18 @@ public class StartMap extends GameMap {
 
         mapHUDRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        for (Bar bar : getBars()) {
+        Iterator iterator = bars.iterator();
+
+        while (iterator.hasNext()) {
+            Bar bar = (Bar) iterator.next();
+
             bar.fill(mapHUDRenderer, 0);
+            //Gdx.app.log(bar.getEntity().getType().getId(), bar.getEntity().getHealth()+"");
+            if (bar.getEntity().getHealth() < 1) {
+                iterator.remove();
+            }
         }
+
 
         //mapHUDRenderer.line(getPlayer().centerX(), getPlayer().centerY(), entities.get(2).centerX(), entities.get(2).centerY());
 
@@ -149,12 +163,17 @@ public class StartMap extends GameMap {
 
         log.render(HUDBatch);
 
-        coinsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*29/30);
-        starsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*27/30);
 
+        HUDBatch.draw(coin, Gdx.graphics.getWidth()*92/100, Gdx.graphics.getHeight()*28/30 - 10*rateY + 10, 16*rateX, 16*rateY); // y+0 -> y+10
+        HUDBatch.draw(star, Gdx.graphics.getWidth()*92/100, Gdx.graphics.getHeight()*27/30 - 10*rateY + 10, 16*rateX, 16*rateY);
+        coinsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*28.2f/30 + 10);
+        starsCollected.render(HUDBatch, Gdx.graphics.getWidth()*95/100, Gdx.graphics.getHeight()*27/30 + 10);
+
+        /*
         for (int i = 0; i < getPlayer().getLifes(); i++) {
-            HUDBatch.draw(life, playerBar.getWidth() + BARX + 5 + i * 10, BARY1-1, 16*rateX, 16*rateY);
+            HUDBatch.draw(life, playerBar.getWidth() + BARX*rateX + 5 + i * 10*rateX/2, BARY1-1, 16*rateX, 16*rateY);
         }
+        */
 
         HUDBatch.end();
 
@@ -192,6 +211,8 @@ public class StartMap extends GameMap {
 
             }
         }
+
+
     }
 
     @Override
@@ -207,6 +228,7 @@ public class StartMap extends GameMap {
         messages.clear();
 
         tiledMap.dispose();
+
         super.dispose();
     }
 
@@ -239,7 +261,13 @@ public class StartMap extends GameMap {
         }
         //Gdx.app.log("addMessage", "adding new message");
 
-        TextRegion newMessage = new TextRegion(id, pid, text, target, 0.65f, 0.65f, width, height, lifespan, delay);
+        TextRegion newMessage;
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            newMessage = new TextRegion(id, pid, text, target, 0.65f, 0.65f, width, height, lifespan, delay);
+        } else {
+            newMessage = new TextRegion(id, pid, text, target, 0.5f, 0.5f, width, height, lifespan, delay);
+        }
+
         messages.add(newMessage);
 
 

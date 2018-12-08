@@ -11,7 +11,7 @@ public class Log{
     float x,y;
     float scaleX, scaleY;
     int maxAmount;
-    int width;
+    float width;
     int last = 0;
 
     ArrayList<TextRegion> logMessages;
@@ -21,7 +21,7 @@ public class Log{
     private static final int HEIGHT = 16;
 
 
-    public Log(float x, float y, int maxAmount, int width, float scaleX, float scaleY) {
+    public Log(float x, float y, int maxAmount, float width, float scaleX, float scaleY) {
         this.x = x;
         this.y = y;
         this.maxAmount = maxAmount;
@@ -79,6 +79,6 @@ public class Log{
         } else {
             logMessages.remove(0);
         }
-        logMessages.add(new TextRegion(text, scaleX, scaleY, width, lines * HEIGHT * scaleX, LIFESPAN, DELAY));
+        logMessages.add(new TextRegion(text, scaleX, scaleY, width, lines * HEIGHT*scaleX, LIFESPAN, DELAY));
     }
 }

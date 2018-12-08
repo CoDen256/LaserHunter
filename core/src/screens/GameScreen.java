@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.laserhunter.LaserHunterGame;
 
+import java.awt.Button;
+
 import buttons.ButtonType;
 import buttons.StageManager;
 import maps.GameMap;
@@ -27,6 +29,7 @@ public class GameScreen implements Screen {
     ButtonType buttonRight;
     ButtonType attackButton;
     ButtonType defendButton;
+    ButtonType pauseButton;
 
     StageManager manager;
 
@@ -34,13 +37,10 @@ public class GameScreen implements Screen {
 
     public GameScreen(LaserHunterGame game) {
         this.game = game;
-    }
 
-    @Override
-    public void show() {
 
         int w = 400;// Gdx.graphics.getWidth(); // Pixels per window
-        int h = Gdx.graphics.getHeight()*w/Gdx.graphics.getWidth();// Gdx.graphics.getHeight(); // Pixels per window
+        int h = 300;// Gdx.graphics.getHeight(); // Pixels per window
 
 
         camera = new OrthographicCamera();
@@ -60,10 +60,20 @@ public class GameScreen implements Screen {
             attackButton = new ButtonType(manager.getStage(), "buttons/attack.atlas", 7.8f*Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 25);
             defendButton = new ButtonType(manager.getStage(), "buttons/defence.atlas", 8.85f*Gdx.graphics.getWidth() / 10, Gdx.graphics.getHeight() / 6);
 
+            pauseButton = new ButtonType(manager.getStage(), "buttons/pause.atlas", Gdx.graphics.getWidth()*97.5f/100, Gdx.graphics.getHeight()*28.5f/30);
+
+            pauseButton.create();
             buttonLeft.create();
             buttonRight.create();
             attackButton.create();
             defendButton.create();
+
+            pauseButton.getButton().addListener(new ClickListener() {
+                @Override
+                public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    pause();
+                    return true;
+                }});
         } else {
             buttonRight = buttonLeft = attackButton = defendButton = null;
         }
@@ -72,6 +82,11 @@ public class GameScreen implements Screen {
 
 
 
+
+    }
+
+    @Override
+    public void show() {
 
     }
 
@@ -99,6 +114,10 @@ public class GameScreen implements Screen {
         camera.update();
         gameMap.update(camera, Gdx.graphics.getDeltaTime());
 
+        if (gameMap.finish) {
+            game.setScreen(new DeathScreen(this.game));
+        }
+
     }
 
     public void clearScreen(){
@@ -116,7 +135,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
-        game.setScreen(new PauseScreen(this.game));
+        game.setScreen(new PauseScreen(this.game, this));
 
     }
 

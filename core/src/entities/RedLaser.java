@@ -89,6 +89,24 @@ public class RedLaser extends Entity {
 
     }
 
+    public void update(float delta, boolean mouseFollow) {
+        follow(new Vector2(Gdx.input.getX(), Gdx.graphics.getHeight()-Gdx.input.getY()));
+        if (Gdx.input.isTouched() && mouseFollow) {
+
+
+            if (ntick % (58/rate) == 0) {
+                tick = 0;
+                shootBeam(centerX(), centerY(), followingVector, beamLifeSpan, beamVelocity);
+            }
+        }
+
+        updateTick(delta);
+
+        updateBeams(delta);
+
+        laserSprite.setPosition(getX(), getY());
+    }
+
     @Override
     public void render(SpriteBatch batch, float delta) {
         laserSprite.draw(batch);
@@ -104,6 +122,13 @@ public class RedLaser extends Entity {
 
     public void follow(Entity entity) {
         followingVector = new Vector2(-centerX() + entity.centerX(), -centerY() + entity.centerY());
+        float newAngle = followingVector.angle(Vector2.X);
+        rotate(180+(angle - newAngle));
+        angle = newAngle;
+    }
+
+    public void follow(Vector2 pos) {
+        followingVector = new Vector2(-centerX() + pos.x, -centerY() + pos.y);
         float newAngle = followingVector.angle(Vector2.X);
         rotate(180+(angle - newAngle));
         angle = newAngle;
@@ -133,17 +158,27 @@ public class RedLaser extends Entity {
             beam.update(deltatime);
 
 
-            int mapCollideCode = map.getCollision(beam.getX(), beam.getY(), beam.getWidth(), beam.getHeight(), null);
-            Entity adjacentEntity = map.getCollisionWithEntities(beam.getPos(), beam.getSize(), this);
+            if (map != null) {
+                int mapCollideCode = map.getCollision(beam.getX(), beam.getY(), beam.getWidth(), beam.getHeight(), null);
+                Entity adjacentEntity = map.getCollisionWithEntities(beam.getPos(), beam.getSize(), this);
 
-            if (adjacentEntity != null) {
-                adjacentEntity.takeDamage(attackPoints);
+                if (adjacentEntity != null) {
+                    adjacentEntity.takeDamage(attackPoints);
+                }
+
+                if (mapCollideCode != map.NO_COLLISION || beam.life > beam.lifespan || adjacentEntity != null) {
+                    beam.dispose();
+                    iterator.remove();
+                }
+            } else {
+                if (beam.getX() < 0 || beam.getX() > Gdx.graphics.getWidth() || beam.getY() < 0 || beam.getY() > Gdx.graphics.getHeight()) {
+                    beam.dispose();
+                    iterator.remove();
+                }
             }
 
-            if (mapCollideCode != map.NO_COLLISION || beam.life > beam.lifespan || adjacentEntity != null) {
-                beam.dispose();
-                iterator.remove();
-            }
+
+
         }
     }
 

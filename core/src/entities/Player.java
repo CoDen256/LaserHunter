@@ -25,7 +25,6 @@ public class Player extends Entity {
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         super.create(snapshot, type, map);
-        lifes = snapshot.getLifes();
 
 
         // spawnRadius = snapshot.getFloat("spawnRadius", 50);

@@ -1,26 +1,26 @@
-desktopStart.png
-size: 723, 95
+pause.png
+size: 120, 46
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
 buttonDown
   rotate: false
   xy: 0, 0
-  size: 241, 95
-  orig: 241, 95
+  size: 40, 46
+  orig: 40, 46
   offset: 0, 0
   index: -1
 buttonOver
   rotate: false
-  xy: 241, 0
-  size: 241, 95
-  orig: 241, 95
+  xy: 40, 0
+  size: 40, 46
+  orig: 40, 46
   offset: 0, 0
   index: -1
 buttonUp
   rotate: false
-  xy: 482, 0
-  size: 241, 95
-  orig: 241, 95
+  xy: 80, 0
+  size: 40, 46
+  orig: 40, 46
   offset: 0, 0
   index: -1

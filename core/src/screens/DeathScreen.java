@@ -14,40 +14,39 @@ import com.mygdx.laserhunter.LaserHunterGame;
 import buttons.ButtonType;
 import buttons.StageManager;
 
-public class PauseScreen implements Screen {
+public class DeathScreen implements Screen {
 
+    SpriteBatch deathBatch;
     LaserHunterGame game;
-    Screen previousScreen;
-    SpriteBatch pauseBatch;
-    Texture message,bg,cat;
+    Texture cat, message, bg;
 
-    ButtonType resumeButton;
+    ButtonType againButton;
     ButtonType mainMenuButton;
 
     StageManager manager;
 
 
-
-    public PauseScreen(final LaserHunterGame game, final Screen previousScreen) {
+    public DeathScreen(final LaserHunterGame game) {
+        Gdx.app.log("screens", "DeathScreen is created");
         this.game = game;
-        this.previousScreen = previousScreen;
-        pauseBatch = new SpriteBatch();
+        deathBatch = new SpriteBatch();
 
-        Gdx.app.log("screens", "PauseScreen is created");
-
+        bg = new Texture("background.png");
+        cat = new Texture("dead.png");
+        message = new Texture("death.png");
 
         manager = new StageManager();
 
-        resumeButton = new ButtonType(manager.getStage(), "buttons/resume.atlas", Gdx.graphics.getWidth()/ 2 -120, Gdx.graphics.getHeight()*2.2f/5);
+        againButton = new ButtonType(manager.getStage(), "buttons/again.atlas", Gdx.graphics.getWidth()/ 2 -120, Gdx.graphics.getHeight()*2.2f/5);
         mainMenuButton = new ButtonType(manager.getStage(), "buttons/mm.atlas", Gdx.graphics.getWidth()/2-120, Gdx.graphics.getHeight()*1/5);
 
-        resumeButton.create();
+        againButton.create();
         mainMenuButton.create();
 
-        resumeButton.getButton().addListener(new ClickListener() {
+        againButton.getButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(previousScreen);
+                game.setScreen(new GameScreen(game));
             }});
 
         mainMenuButton.getButton().addListener(new ClickListener() {
@@ -56,14 +55,12 @@ public class PauseScreen implements Screen {
                 game.setScreen(new MainMenuScreen(game));
             }});
 
-        message = new Texture("pausemessage.png");
-        bg = new Texture("background.png");
-        cat = new Texture("cat.png");
     }
 
     @Override
     public void show() {
-        Gdx.app.log("screens", "PauseScreen is showed");
+        Gdx.app.log("screens", "DeathScreen is showed");
+
 
     }
 
@@ -73,19 +70,21 @@ public class PauseScreen implements Screen {
         clearScreen();
         update();
 
-        pauseBatch.begin();
+        deathBatch.begin();
 
-        pauseBatch.draw(bg, 0, 0);
-        pauseBatch.draw(message, Gdx.graphics.getWidth()/2-179, Gdx.graphics.getHeight()*4/5);
-        pauseBatch.draw(cat, Gdx.graphics.getWidth()/2-55, Gdx.graphics.getHeight()*3.2f/5);
+        deathBatch.draw(bg, 0, 0);
 
-        pauseBatch.end();
+        deathBatch.draw(message,Gdx.graphics.getWidth()/2-112, Gdx.graphics.getHeight()*4.2f/5);
+        deathBatch.draw(cat, Gdx.graphics.getWidth()/2-55, Gdx.graphics.getHeight()*3.3f/5, 110, 75);
+
+        deathBatch.end();
 
         manager.render();
 
     }
 
     private void update() {
+
 
     }
 

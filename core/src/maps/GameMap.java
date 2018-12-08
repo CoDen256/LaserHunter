@@ -9,6 +9,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import buttons.ButtonType;
 import entities.Entity;
@@ -27,6 +28,7 @@ public abstract class GameMap {
 
     public static final int NO_COLLISION = -10;
     public static final int BOUNDARY_COLLISION = -1;
+    public boolean finish = false;
 
     public GameMap() {
 
@@ -61,9 +63,18 @@ public abstract class GameMap {
 
     public void update(OrthographicCamera camera, float delta) {
 
-        for (Entity entity : entities) {
+
+        Iterator iterator = entities.iterator();
+
+        while (iterator.hasNext()) {
+            Entity entity = (Entity) iterator.next();
+
             entity.update(delta);
 
+            if (entity.isDisposed()) {
+                iterator.remove();
+                finish = true;
+            }
         }
 
         followPlayer(getPlayer(), camera);
@@ -71,9 +82,8 @@ public abstract class GameMap {
 
     }
 
-    public void dispose(){
-        this.dispose();
-    }
+    public void dispose(){};
+
 
     public abstract void addHealthBar(Entity entity);
 
@@ -179,12 +189,6 @@ public abstract class GameMap {
 
             if (tile.getName() == "Star") {
                 entity.takeStar();
-            } else if (tile.getName() == "Life") {
-                if (entity.getId() == "player") {
-                    entity.takeLife();
-                } else {
-                    return;
-                }
             } else {
                 entity.takeCoin(tile.getCoins());
                 entity.takeDamage(tile.getHealth());

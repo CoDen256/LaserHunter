@@ -13,8 +13,8 @@ public class EntitySnapshot {
     public int beamRate;
     public float beamLifeSpan, beamVelocity;
 
-    int staticPosition;
-    float initialAngle;
+    public int staticPosition;
+    public float initialAngle;
 
     public HashMap<String, String> data;
 

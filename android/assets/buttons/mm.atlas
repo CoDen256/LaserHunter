@@ -1,9 +1,9 @@
-desktopStart.png
+mainmenu.png
 size: 723, 95
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-buttonDown
+buttonUp
   rotate: false
   xy: 0, 0
   size: 241, 95
@@ -17,7 +17,7 @@ buttonOver
   orig: 241, 95
   offset: 0, 0
   index: -1
-buttonUp
+buttonDown
   rotate: false
   xy: 482, 0
   size: 241, 95

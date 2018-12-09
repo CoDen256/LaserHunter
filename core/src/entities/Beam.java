@@ -27,13 +27,13 @@ public class Beam {
         image = new Texture("entities/"+path+"/beam.png");
         beamSprite = new Sprite(image);
 
-        angle = targetDirection.angle(Vector2.X);
+        angle = targetDirection.angle(new Vector2(1,0));
         this.velocity = velocity;
         velocityVector = targetDirection;
 
         pos = new Vector2(x, y);
         beamSprite.setCenter(x, y);
-        beamSprite.rotate(180-angle);
+        beamSprite.rotate(-angle);
         life = 0;
         this.lifespan = lifespan;
 

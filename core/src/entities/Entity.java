@@ -1,6 +1,7 @@
 package entities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -43,6 +44,11 @@ public abstract class Entity{
 
     protected int jumpTick;
     protected boolean disposed = false;
+
+    Texture shield;
+    Sound kickSound;
+    boolean kicking = false;
+    float soundTick;
 
 
 
@@ -137,6 +143,10 @@ public abstract class Entity{
         this.type = type;
         this.map = map;
 
+        kickSound = Gdx.audio.newSound(Gdx.files.internal("kick.mp3"));
+        soundTick = 0;
+
+        shield = new Texture("entities/Animation/player/shield.png");
 
         setDefence(false);
         setAttacking(false);
@@ -156,6 +166,10 @@ public abstract class Entity{
     }
 
     public void update(float deltatime) {
+        soundTick += deltatime;
+        if (soundTick >= 0.2f) {
+            kicking = false;
+        }
 
         float newX = pos.x;
         newX += this.velX * deltatime;
@@ -470,6 +484,16 @@ public abstract class Entity{
             health = 0;
             dispose();
         }
+
+        if (amount > 0) {
+            if (!kicking) {
+                kickSound.play();
+                kicking = true;
+                soundTick = 0;
+            }
+
+        }
+
 
         if (health > maxHealth) health = maxHealth;
     }

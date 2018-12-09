@@ -115,6 +115,7 @@ public class GameScreen implements Screen {
         gameMap.update(camera, Gdx.graphics.getDeltaTime());
 
         if (gameMap.finish) {
+            gameMap.clearSprites();
             game.setScreen(new DeathScreen(this.game));
         }
 
@@ -154,7 +155,8 @@ public class GameScreen implements Screen {
 
     }
 
-
-
+    public GameMap getGameMap() {
+        return gameMap;
+    }
 }
 

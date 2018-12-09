@@ -73,7 +73,10 @@ public abstract class GameMap {
 
             if (entity.isDisposed()) {
                 iterator.remove();
-                finish = true;
+                if (entity.getId() == "player") {
+                    finish = true;
+                }
+
             }
         }
 
@@ -84,6 +87,7 @@ public abstract class GameMap {
 
     public void dispose(){};
 
+    public abstract void clearSprites();
 
     public abstract void addHealthBar(Entity entity);
 

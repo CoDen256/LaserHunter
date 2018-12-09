@@ -3,8 +3,10 @@ package entities;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import hud.AnimationHandler;
 import maps.GameMap;
 import snapshot.EntitySnapshot;
 import tiles.TileType;
@@ -15,6 +17,9 @@ public class GuardDoge extends Entity {
     float initialX;
     float movingRange;
     float cooldownTick,defendTick;
+
+    protected int lastMovingDirection = 1 ; // 0 - left, 1 - right
+    AnimationHandler handler;
 
     int direction;
 
@@ -29,6 +34,11 @@ public class GuardDoge extends Entity {
         cooldownTick = defendTick = 0;
 
         map.addHealthBar(this);
+
+        handler = new AnimationHandler();
+
+        handler.initialize(0, "dogo/static.png", 42, 30);
+        handler.initialize(1, "dogo/run.png", 42, 30);
 
     }
 
@@ -127,8 +137,10 @@ public class GuardDoge extends Entity {
             direction = (int) (Math.random() * 10) % 2 - 1;
         } else if (direction == 1) {
             moveToRight(SPEED_STEP/2);
+            lastMovingDirection = 1;
         } else if (direction == -1) {
             moveToLeft(SPEED_STEP/2);
+            lastMovingDirection = 0;
         }
 
 
@@ -164,8 +176,10 @@ public class GuardDoge extends Entity {
         if (Math.abs(getX()-target.x) > 1 * TileType.TILE_SIZE) {
             if (getX() < target.x) {
                 moveToRight(SPEED_STEP);
+                lastMovingDirection = 1;
             } else if (getX() > target.x) {
                 moveToLeft(SPEED_STEP);
+                lastMovingDirection = 0;
             }
 
         }
@@ -191,7 +205,9 @@ public class GuardDoge extends Entity {
 
     @Override
     public void render(SpriteBatch batch, float delta) {
-        batch.draw(this.image, this.getX(), this.getY());
+        handler.increaseStateTime(delta) ;
+        batch.draw((TextureRegion) handler.getCurrentAnim()[lastMovingDirection].getKeyFrame(handler.getStateTime(), true), pos.x , pos.y);
+        //batch.draw(this.image, this.getX(), this.getY());
     }
 
 }

@@ -224,12 +224,17 @@ public class StartMap extends GameMap {
         HUDRenderer.dispose();
         mapHUDRenderer.dispose();
 
-        bars.clear();
-        messages.clear();
+        clearSprites();
 
         tiledMap.dispose();
 
         super.dispose();
+    }
+
+    public void clearSprites() {
+        bars.clear();
+        messages.clear();
+
     }
 
 

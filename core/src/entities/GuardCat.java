@@ -38,7 +38,7 @@ public class GuardCat extends Entity {
         Entity closest = getClosest(visionRange * TileType.TILE_SIZE, EntityType.PLAYER);
         if (closest != null) {
             if (Math.abs(getX() - closest.getX()) > 4 * TileType.TILE_SIZE) {
-                map.addMessage(0, gameId, "Come here my little boy",this,125,15,2,0);
+                map.addMessage(0, gameId, "Come here my little boy",this,125,20,2,0);
             }
 
             if (getRadius(getX(), getY(), closest.getX(), closest.getY()) < 30 && cd == 0) {

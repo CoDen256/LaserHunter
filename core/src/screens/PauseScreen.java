@@ -28,7 +28,7 @@ public class PauseScreen implements Screen {
 
 
 
-    public PauseScreen(final LaserHunterGame game, final Screen previousScreen) {
+    public PauseScreen(final LaserHunterGame game, final GameScreen previousScreen) {
         this.game = game;
         this.previousScreen = previousScreen;
         pauseBatch = new SpriteBatch();
@@ -53,6 +53,7 @@ public class PauseScreen implements Screen {
         mainMenuButton.getButton().addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                previousScreen.getGameMap().clearSprites();
                 game.setScreen(new MainMenuScreen(game));
             }});
 

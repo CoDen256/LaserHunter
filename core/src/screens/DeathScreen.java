@@ -74,7 +74,7 @@ public class DeathScreen implements Screen {
 
         deathBatch.draw(bg, 0, 0);
 
-        deathBatch.draw(message,Gdx.graphics.getWidth()/2-112, Gdx.graphics.getHeight()*4.2f/5);
+        deathBatch.draw(message,Gdx.graphics.getWidth()/2-120, Gdx.graphics.getHeight()*4.2f/5);
         deathBatch.draw(cat, Gdx.graphics.getWidth()/2-55, Gdx.graphics.getHeight()*3.3f/5, 110, 75);
 
         deathBatch.end();

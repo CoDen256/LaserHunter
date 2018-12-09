@@ -4,10 +4,13 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import hud.AnimationHandler;
 import maps.GameMap;
 import snapshot.EntitySnapshot;
 import tiles.TileType;
@@ -15,9 +18,12 @@ import tiles.TileType;
 public class Player extends Entity {
 
     protected int movingDirection;
+    protected int lastMovingDirection = 1 ; // 0 - left, 1 - right
 
     protected static final int xLow = Gdx.graphics.getWidth()/2;
     protected static final int yHigh = Gdx.graphics.getHeight()*2/3;
+
+    AnimationHandler handler;
 
     // float spawnRadius;
     // 29х50
@@ -25,6 +31,14 @@ public class Player extends Entity {
 
     public void create(EntitySnapshot snapshot, EntityType type, GameMap map) {
         super.create(snapshot, type, map);
+
+        handler = new AnimationHandler();
+
+        handler.initialize(0, "player/static.png", 29, 55);
+        handler.initialize(1, "player/run.png", 29, 55);
+        handler.initialize(3, "player/jump.png", 49, 55);
+        handler.initialize(2, "player/fall.png", 29, 55);
+        handler.initialize(4, "player/attack.png", 37, 55);
 
 
         // spawnRadius = snapshot.getFloat("spawnRadius", 50);
@@ -51,6 +65,7 @@ public class Player extends Entity {
 
     @Override
     public void update(float deltatime) {
+        handler.setAnim(0);
         totalForceX = potentialForceX;
         potentialForceX = 0;
 
@@ -64,7 +79,15 @@ public class Player extends Entity {
         updateInput(); // Handling all the input
         updatePhysics(deltatime); // Applying physics to entity and adding forces
 
+        if (velY > 0) {
+            handler.setAnim(3);
+        } else if (velY < 0) {
+            handler.setAnim(2);
+        }
+
         updateVelocity(totalForceX, totalForceY, deltatime);
+
+
 
         takeEnergy(RESTORE_ENERGY*deltatime); // restoring energy
         combatUpdate(deltatime, closestAttack); // Combat handling
@@ -90,7 +113,6 @@ public class Player extends Entity {
         if (isAttacking) {
 
             attack(attackPoints, closest);
-
             setAttacking(false);
 
         }
@@ -102,6 +124,7 @@ public class Player extends Entity {
         if ((Gdx.input.isKeyPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && (floating)) {
             if (isSecondTap(xLow, yHigh)){
 
+                handler.setAnim(3);
                 ascend();
 
 
@@ -128,6 +151,8 @@ public class Player extends Entity {
 
         }
 
+
+
         // Left movement
         if (Gdx.input.isKeyPressed(Input.Keys.A) || this.movingDirection == -1) {
             if (!isInDefence) {
@@ -135,21 +160,28 @@ public class Player extends Entity {
             } else {
                 moveToLeft(SPEED_STEP/2.85f);
             }
+            handler.setAnim(1);
+            lastMovingDirection = 0;
 
 
         }
         // Right movement
         if (Gdx.input.isKeyPressed(Input.Keys.D) || this.movingDirection == 1) {
             if (!isInDefence) {
+
                 moveToRight();
             } else {
                 moveToRight(SPEED_STEP/2.85f);
             }
+            handler.setAnim(1);
+            lastMovingDirection = 1;
 
         }
 
         if(Gdx.app.getType() == Application.ApplicationType.Desktop){
-            if(Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)) setAttacking(true);
+            if(Gdx.input.isKeyJustPressed(Input.Keys.CONTROL_LEFT)){
+                setAttacking(true);
+            }
             if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT)) setDefence(true); else setDefence(false);
         }
 
@@ -159,6 +191,8 @@ public class Player extends Entity {
         if (Gdx.input.isKeyJustPressed(Input.Keys.J)) {
             takeEnergy(-1000);
         }
+
+
     }
 
 
@@ -177,7 +211,31 @@ public class Player extends Entity {
 
     @Override
     public void render(SpriteBatch batch, float delta) {
-        batch.draw(image, getX(), getY());
+
+        handler.increaseStateTime(delta) ;
+
+
+
+        if (handler.getCurrent_animation() == 3) {
+            batch.draw((TextureRegion) handler.getCurrentAnim()[lastMovingDirection].getKeyFrame(handler.getStateTime(), true), pos.x + 6 * (-1), pos.y);
+            if (isInDefence) {
+                batch.draw(shield, pos.x -12, pos.y);
+            }}
+        else {
+
+
+            batch.draw((TextureRegion) handler.getCurrentAnim()[lastMovingDirection].getKeyFrame(handler.getStateTime(), true), pos.x, pos.y);
+            if (isInDefence) {
+                batch.draw(shield, pos.x - 12, pos.y);
+            }
+        }
+
+
+
+
+
+
+        //batch.draw(image, getX(), getY());
     }
 
     // SnapShot Handler

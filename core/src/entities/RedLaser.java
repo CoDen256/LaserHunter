@@ -50,16 +50,13 @@ public class RedLaser extends Entity {
         beams = new ArrayList<Beam>();
 
         if (staticPostion == 0) {
-            followingVector = Vector2.X.rotate(angle);
+            followingVector = (new Vector2(1,0)).rotate(angle);
             rotate(angle);
         }
 
     }
 
     public void update(float deltatime) {
-
-
-
 
         Entity closest = getClosest(attackRange * TileType.TILE_SIZE, EntityType.PLAYER);
 
@@ -71,14 +68,23 @@ public class RedLaser extends Entity {
                 if (staticPostion == 2) {
                     flyOver(closest);
                 }
+                if (ntick % (58/rate) == 0) {
+                    tick = 0;
+                    shootBeam(centerX(), centerY(), followingVector, beamLifeSpan, beamVelocity);
+                }
             }
 
 
+
+
+
+        }
+
+        if (staticPostion == 0) {
             if (ntick % (58/rate) == 0) {
                 tick = 0;
                 shootBeam(centerX(), centerY(), followingVector, beamLifeSpan, beamVelocity);
             }
-
         }
 
         updateTick(deltatime);
@@ -122,8 +128,9 @@ public class RedLaser extends Entity {
 
     public void follow(Entity entity) {
         followingVector = new Vector2(-centerX() + entity.centerX(), -centerY() + entity.centerY());
-        float newAngle = followingVector.angle(Vector2.X);
-        rotate(180+(angle - newAngle));
+        float newAngle = followingVector.angle(new Vector2(1,0));
+
+        rotate(angle-newAngle);
         angle = newAngle;
     }
 
@@ -134,8 +141,8 @@ public class RedLaser extends Entity {
         angle = newAngle;
     }
 
-    public void rotate(float angle) {
-        laserSprite.rotate(angle);
+    public void rotate(float amount) {
+        laserSprite.rotate(amount);
     }
 
     public void updateTick(float deltatime) {

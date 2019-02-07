@@ -132,11 +132,12 @@ public class RedLaser extends Entity {
 
         rotate(angle-newAngle);
         angle = newAngle;
+
     }
 
     public void follow(Vector2 pos) {
         followingVector = new Vector2(-centerX() + pos.x, -centerY() + pos.y);
-        float newAngle = followingVector.angle(Vector2.X);
+        float newAngle = followingVector.angle(new Vector2(1,0));
         rotate(180+(angle - newAngle));
         angle = newAngle;
     }

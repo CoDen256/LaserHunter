@@ -486,11 +486,14 @@ public abstract class Entity{
         }
 
         if (amount > 0) {
-            if (!kicking) {
-                kickSound.play();
-                kicking = true;
-                soundTick = 0;
+            if (getId() == "player") {
+                if (!kicking) {
+                    kickSound.play();
+                    kicking = true;
+                    soundTick = 0;
+                }
             }
+
 
         }
 

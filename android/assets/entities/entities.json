@@ -2,8 +2,8 @@
 {
 	class: snapshot.EntitySnapshot
 	type: player
-	x: 800
-	y: 100
+	x: 50
+	y: 2000
 	lifes:9
 	id:0
 
@@ -137,7 +137,7 @@
 	}
 	{
 		class: snapshot.EntitySnapshot
-		type: RedLaser
+		type: GreenLaser
 		x: 25
 		y: 25
 		beamRate: 1
